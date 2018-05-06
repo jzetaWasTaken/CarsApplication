@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class Car implements Serializable {
     // Fields
+    private final SimpleIntegerProperty carId;
     private final SimpleStringProperty plateNumber;
     private final SimpleStringProperty brand;
     private final SimpleStringProperty model;
@@ -24,6 +25,7 @@ public class Car implements Serializable {
     private final SimpleObjectProperty<Owner> owner;
     // Construct
     public Car() {
+        carId = new SimpleIntegerProperty();
         plateNumber = new SimpleStringProperty();
         brand = new SimpleStringProperty();
         model = new SimpleStringProperty();
@@ -32,6 +34,12 @@ public class Car implements Serializable {
         owner = new SimpleObjectProperty<>();
     }
     // Getters & setters
+    public Integer getCarId() {
+        return carId.get();
+    }
+    public void setCarId(Integer carId) {
+        this.carId.set(carId);
+    }
     public String getPlateNumber() {
         return plateNumber.get();
     }
@@ -62,10 +70,10 @@ public class Car implements Serializable {
     public void setAge(int age) {
         this.age.set(age);
     }
-    public Owner getOwnerCode() {
+    public Owner getOwner() {
         return owner.get();
     }
-    public void setOwnerCode(Owner owner) {
+    public void setOwner(Owner owner) {
         this.owner.set(owner);
     }
 }

@@ -27,4 +27,8 @@ public class CarDBException extends Exception {
     public CarDBException(String msg) {
         super(msg);
     }
+    
+    public CarDBException(Throwable cause) {
+        super(cause);
+    }
 }

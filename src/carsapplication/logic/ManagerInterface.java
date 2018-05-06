@@ -28,8 +28,8 @@ public interface ManagerInterface {
     public List<Car> getCarsByModel(String model) throws NoCarException, CarDBException;
     public Car getCar(String plateNumber) throws NoCarException, CarDBException;
     public List<Owner> getOwners() throws NoOwnerException, CarDBException;
-    public void registerCar() throws SQLException;
-    public void registerOwner() throws SQLException;
-    public void modifyCar() throws SQLException;
-    public void modifyOwner() throws SQLException;
+    public void registerCar(Car car) throws SQLException;
+    public void registerOwner(Owner owner) throws SQLException;
+    public void modifyCar(Car car) throws SQLException;
+    public void modifyOwner(Owner owner) throws SQLException;
 }

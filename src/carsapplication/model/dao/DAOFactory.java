@@ -5,15 +5,15 @@
  */
 package carsapplication.model.dao;
 
+import carsapplication.exception.CarDBException;
+
 /**
  *
  * @author jon
  */
 public class DAOFactory {
-    public static DAOInterface newDAO(DBType type) {
+    public static DAOInterface newDAO(DBType type) throws CarDBException {
         switch (type) {
-            case HIBERNATE:
-                return new DAOHibernate();
             case MONGO_DB:
                 return new DAOMongo();
             case ORACLE:

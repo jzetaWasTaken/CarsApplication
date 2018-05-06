@@ -22,8 +22,8 @@ public interface DAOInterface {
     public List<Car> findCarsByModel(String model) throws CarDBException;
     public Car findCar(String plateNumber) throws CarDBException;
     public List<Owner> findOwners() throws CarDBException;
-    public void createCar() throws CarDBException;
-    public void createOwner() throws CarDBException;
-    public void updateCar() throws CarDBException;
-    public void updateOwner() throws CarDBException;
+    public void createCar(Car car) throws CarDBException;
+    public void createOwner(Owner owner) throws CarDBException;
+    public void updateCar(Car car) throws CarDBException;
+    public void deleteCar(Car car) throws CarDBException;
 }

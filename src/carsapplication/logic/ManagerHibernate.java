@@ -3,75 +3,82 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package carsapplication.model.dao;
+package carsapplication.logic;
 
 import carsapplication.exception.CarDBException;
+import carsapplication.exception.NoCarException;
+import carsapplication.exception.NoOwnerException;
 import carsapplication.model.Car;
 import carsapplication.model.Owner;
+import carsapplication.model.dao.DAOInterface;
+import carsapplication.model.dao.DBType;
+import java.sql.SQLException;
 import java.util.List;
-
-
 
 /**
  *
  * @author jon
  */
-public class DAOHibernate implements DAOInterface {
+public class ManagerHibernate implements ManagerInterface {
 
     @Override
-    public List<Car> findCars() throws CarDBException {
+    public DAOInterface getDao(DBType type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Car> findCarsByBrand(String brand) throws CarDBException {
+    public List<Car> getCars() throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Car> findCarsByOwner(Owner owner) throws CarDBException {
+    public List<Car> getCarsByBrand(String brand) throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Car> findCarsByColor(String color) throws CarDBException {
+    public List<Car> getCarsByOwner(Owner owner) throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Car> findCarsByModel(String model) throws CarDBException {
+    public List<Car> getCarsByColor(String color) throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Car findCar(String plateNumber) throws CarDBException {
+    public List<Car> getCarsByModel(String model) throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Owner> findOwners() throws CarDBException {
+    public Car getCar(String plateNumber) throws NoCarException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void createCar() throws CarDBException {
+    public List<Owner> getOwners() throws NoOwnerException, CarDBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void createOwner() throws CarDBException {
+    public void registerCar(Car car) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateCar() throws CarDBException {
+    public void registerOwner(Owner owner) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateOwner() throws CarDBException {
+    public void modifyCar(Car car) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public void modifyOwner(Owner owner) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

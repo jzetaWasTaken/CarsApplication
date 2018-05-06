@@ -16,18 +16,24 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class Owner {
     // Fields
+    private final SimpleIntegerProperty ownerCode;
     private final SimpleStringProperty name;
     private final SimpleStringProperty surname;
-    private final SimpleStringProperty id;
     private final SimpleObjectProperty<Date> dateOfBirth;
     // Constructors
     public Owner() {
+        ownerCode = new SimpleIntegerProperty();
         name = new SimpleStringProperty();
         surname =  new SimpleStringProperty();
-        id = new SimpleStringProperty();
         dateOfBirth = new SimpleObjectProperty<>();
     }
     // Getters & setters
+    public Integer getOwnerCode() {
+        return ownerCode.get();
+    }
+    public void setOwnerCode(Integer ownerCode) {
+        this.ownerCode.set(ownerCode);
+    }
     public String getName() {
         return name.get();
     }
@@ -39,12 +45,6 @@ public class Owner {
     }
     public void setSurname(String surname) {
         this.surname.set(surname);
-    }
-    public String getId() {
-        return id.get();
-    }
-    public void setId(String id) {
-        this.id.set(id);
     }
     public Date getDateOfBirth() {
         return dateOfBirth.get();

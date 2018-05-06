@@ -11,13 +11,14 @@ import carsapplication.model.Owner;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,13 +26,32 @@ import java.util.logging.Logger;
  */
 public class DAOOracle implements DAOInterface {
 
-    private Connection connection;
     private String host;
     private String dbName;
     private String dbUser;
     private String dbPassword;
     private String dbPort;
-    private PreparedStatement statement;
+    
+    private static final String CAR_SQL = 
+            "SELECT CAR_ID, AGE, BRAND, MODEL, PLATE_NUMBER,"
+            + "DEREF(C.CAR_OWNER).OWNER_CODE OWNER_CODE,"
+            + "DEREF(C.CAR_OWNER).NAME OWNER_NAME,"
+            + "DEREF(C.CAR_OWNER).SURNAME OWNER_SURNAME,"
+            + "DEREF(C.CAR_OWNER).BIRTH_DATE OWNER_BIRTH_DATE "
+            + "FROM CARS C";
+    private static final String OWNER_SQL =
+            "SELECT OWNER_CODE, NAME, SURNAME, BIRTH_DATE "
+            + "FROM OWNERS";
+    private static final String CAR_INSERT = 
+            "INSERT INTO CARS SELECT "
+            + "CAR(CAR_ID_SEQ.NEXTVAL,?,?,?,?,?,REF(O)) "
+            + "FROM OWNERS O WHERE O.OWNER_CODE = ?";
+    private static final String OWNER_INSERT =
+            "INSERT INTO OWNERS VALUES(CODE_SEQ.NEXTVAL,?,?,?)";
+    private static final String CAR_UPDATE = 
+            "UPDATE CARS SET PLATE_NUMBER = ?, COLOR = ?, AGE = ?,"
+            + "CAR_OWNER = (SELECT REF(O) FROM OWNERS WHERE O.OWNER_CODE = ?)";
+    private static final String CAR_DELETE = "DELETE CARS WHERE CAR_ID = ?";
 
     public DAOOracle() throws CarDBException {
         try (FileInputStream input = new FileInputStream("db.properties")) {
@@ -47,7 +67,8 @@ public class DAOOracle implements DAOInterface {
         }
     }
     
-    private void connect() throws CarDBException {
+    private Connection getConnection() throws CarDBException {
+        Connection connection = null;
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             String url = String.format("jdbc:oracle:thin:@%s:%s:%s", host, dbPort, dbName);
@@ -55,70 +76,209 @@ public class DAOOracle implements DAOInterface {
         } catch (ClassNotFoundException | SQLException e) {
             throw new CarDBException(e.getMessage());
         }
+        return connection;
     }
-    
-    private void disconnect() throws CarDBException {
-        try {
-            if (statement != null) statement.close();
-            if (connection != null) connection.close();
-        } catch (SQLException e) {
-            throw new CarDBException(e.getMessage());
-        }
-    }
+
     
     @Override
     public List<Car> findCars() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Car> cars = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(CAR_SQL);
+            ResultSet set = pstmt.executeQuery();
+            mapCar(set, cars);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return cars;
     }
 
     @Override
     public List<Car> findCarsByBrand(String brand) throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Car> cars = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            String sql = CAR_SQL + " WHERE C.BRAND=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, brand.toUpperCase());
+            ResultSet set = pstmt.executeQuery();
+            mapCar(set, cars);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return cars;
     }
 
     @Override
     public List<Car> findCarsByOwner(Owner owner) throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Car> cars = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            String sql = CAR_SQL + " WHERE C.CAR_OWNER.OWNER_CODE=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, owner.getOwnerCode());
+            ResultSet set = pstmt.executeQuery();
+            mapCar(set, cars);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return cars;
     }
 
     @Override
     public List<Car> findCarsByColor(String color) throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Car> cars = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            String sql = CAR_SQL + " WHERE C.COLOR=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, color.toUpperCase());
+            ResultSet set = pstmt.executeQuery();
+            mapCar(set, cars);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return cars;
     }
 
     @Override
     public List<Car> findCarsByModel(String model) throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Car> cars = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            String sql = CAR_SQL + " WHERE C.MODEL=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, model.toUpperCase());
+            ResultSet set = pstmt.executeQuery();
+            mapCar(set, cars);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return cars;
     }
 
     @Override
     public Car findCar(String plateNumber) throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Car car = null;
+        try (Connection connection = getConnection()) {
+            String sql = CAR_SQL + " WHERE C.PLATE_NUMBER=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, plateNumber.toUpperCase());
+            ResultSet set = pstmt.executeQuery();
+            car = mapCar(set);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return car;
     }
 
     @Override
     public List<Owner> findOwners() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Owner> owners = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(OWNER_SQL);
+            ResultSet set = pstmt.executeQuery();
+            mapOwner(set, owners);
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+        return owners;
     }
 
     @Override
-    public void createCar() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createCar(Car car) throws CarDBException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(CAR_INSERT);
+            pstmt.setString(1, car.getPlateNumber().toUpperCase());
+            pstmt.setString(2, car.getBrand().toUpperCase());
+            pstmt.setString(3, car.getModel().toUpperCase());
+            pstmt.setString(4, car.getColor().toUpperCase());
+            pstmt.setInt(5, car.getAge());
+            pstmt.setInt(6, car.getOwner().getOwnerCode());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
     }
 
     @Override
-    public void createOwner() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createOwner(Owner owner) throws CarDBException {
+        try (Connection connection = getConnection()) {
+            String sql =
+                    "INSERT INTO OWNERS VALUES(CODE_SEQ.NEXTVAL,?,?,?)";
+            PreparedStatement pstmt = connection.prepareStatement(OWNER_INSERT);
+            pstmt.setString(1, owner.getName().toUpperCase());
+            pstmt.setString(2, owner.getSurname().toUpperCase());
+            pstmt.setDate(3, new Date(owner.getDateOfBirth().getTime()));
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
     }
 
     @Override
-    public void updateCar() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void updateOwner() throws CarDBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateCar(Car car) throws CarDBException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(CAR_UPDATE);
+            pstmt.setString(1, car.getPlateNumber());
+            pstmt.setString(2, car.getColor());
+            pstmt.setInt(3, car.getAge());
+            pstmt.setInt(4, car.getOwner().getOwnerCode());
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
     }
     
+    private void mapCar(ResultSet set, List<Car> cars) throws SQLException {
+        while (set.next()) {
+            Owner owner = new Owner();
+            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setName(set.getString("owner_name"));
+            owner.setSurname(set.getString("owner_surname"));
+            owner.setDateOfBirth(set.getDate("owner_birth_date"));
+            Car car = new Car();
+            car.setCarId(set.getInt("car_id"));
+            car.setAge(set.getInt("age"));
+            car.setBrand(set.getString("brand"));
+            car.setModel(set.getString("model"));
+            car.setPlateNumber(set.getString("plate_number"));
+            car.setOwner(owner);
+            cars.add(car);
+        }
+    }
+
+    @Override
+    public void deleteCar(Car car) throws CarDBException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(CAR_DELETE);
+            pstmt.setInt(1, car.getCarId());
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+    }
+    
+    private Car mapCar(ResultSet set)  throws SQLException {
+        Car car = null;
+        if (set.next()) {
+            Owner owner = new Owner();
+            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setName(set.getString("owner_name"));
+            owner.setSurname(set.getString("owner_surname"));
+            owner.setDateOfBirth(set.getDate("owner_birth_date"));
+            car = new Car();
+            car.setCarId(set.getInt("car_id"));
+            car.setAge(set.getInt("age"));
+            car.setBrand(set.getString("brand"));
+            car.setModel(set.getString("model"));
+            car.setPlateNumber(set.getString("plate_number"));
+            car.setOwner(owner);
+        }
+        return car;
+    }
+
+    private void mapOwner(ResultSet set, List<Owner> owners) throws SQLException {
+        while (set.next()) {
+            Owner owner = new Owner();
+            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setName(set.getString("name"));
+            owner.setSurname(set.getString("surname"));
+            owner.setDateOfBirth(set.getDate("birth_date"));
+            owners.add(owner);
+        }
+    }
 }

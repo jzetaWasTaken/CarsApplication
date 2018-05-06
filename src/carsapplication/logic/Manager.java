@@ -24,8 +24,12 @@ public class Manager implements ManagerInterface {
 
     private final DAOInterface dao;
     
-    Manager(DBType type) {
+    Manager(DBType type) throws CarDBException {
         dao = DAOFactory.newDAO(type);
+    }
+
+    Manager() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -69,22 +73,22 @@ public class Manager implements ManagerInterface {
     }
 
     @Override
-    public void registerCar() throws SQLException {
+    public void registerCar(Car car) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void registerOwner() throws SQLException {
+    public void registerOwner(Owner owner) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void modifyCar() throws SQLException {
+    public void modifyCar(Car car) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void modifyOwner() throws SQLException {
+    public void modifyOwner(Owner owner) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
