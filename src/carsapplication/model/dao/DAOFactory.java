@@ -12,12 +12,15 @@ import carsapplication.exception.CarDBException;
  * @author jon
  */
 public class DAOFactory {
+    
     public static DAOInterface newDAO(DBType type) throws CarDBException {
         switch (type) {
             case MONGO_DB:
                 return new DAOMongo();
             case ORACLE:
                 return new DAOOracle();
+            case HIBERNATE:
+                return new DAOHibernate();
             default:
                 return null;
         }

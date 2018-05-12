@@ -5,12 +5,11 @@
  */
 package carsapplication;
 
+import carsapplication.ui.controller.DbSelectionController;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import static javafx.application.Application.launch;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 /**
@@ -20,25 +19,21 @@ import javafx.stage.Stage;
 public class CarsApplication extends Application {
     
     @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
+    public void start(Stage primaryStage) throws Exception {
+        //Create Bussines Logic Controller to be passed to UI controllers
+        //ManagerInterface bussinessLogicController= ManagerFactory.newManager();
+        //Load node graph from fxml file
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("ui/view/db_selection.fxml")
+        );
+        Parent root = (Parent) loader.load();
+        //Get controller for graph 
+        DbSelectionController primaryStageController=
+                ((DbSelectionController)loader.getController());
         
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
-        Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStageController.setStage(primaryStage);
+        //Initializes primary stage
+        primaryStageController.initStage(root);
     }
 
     /**
@@ -47,5 +42,4 @@ public class CarsApplication extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
 }

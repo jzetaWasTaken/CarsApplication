@@ -10,6 +10,7 @@ import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -114,7 +115,7 @@ public class DAOOracle implements DAOInterface {
         try (Connection connection = getConnection()) {
             String sql = CAR_SQL + " WHERE C.CAR_OWNER.OWNER_CODE=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setInt(1, owner.getOwnerCode());
+            pstmt.setObject(1, owner.getOwnerCode());
             ResultSet set = pstmt.executeQuery();
             mapCar(set, cars);
         } catch (SQLException e) {
@@ -190,7 +191,7 @@ public class DAOOracle implements DAOInterface {
             pstmt.setString(3, car.getModel().toUpperCase());
             pstmt.setString(4, car.getColor().toUpperCase());
             pstmt.setInt(5, car.getAge());
-            pstmt.setInt(6, car.getOwner().getOwnerCode());
+            pstmt.setObject(6, car.getOwner().getOwnerCode());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CarDBException(e);
@@ -218,7 +219,7 @@ public class DAOOracle implements DAOInterface {
             pstmt.setString(1, car.getPlateNumber());
             pstmt.setString(2, car.getColor());
             pstmt.setInt(3, car.getAge());
-            pstmt.setInt(4, car.getOwner().getOwnerCode());
+            pstmt.setObject(4, car.getOwner().getOwnerCode());
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -227,12 +228,12 @@ public class DAOOracle implements DAOInterface {
     private void mapCar(ResultSet set, List<Car> cars) throws SQLException {
         while (set.next()) {
             Owner owner = new Owner();
-            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setOwnerCode((BigInteger) set.getObject("owner_code"));
             owner.setName(set.getString("owner_name"));
             owner.setSurname(set.getString("owner_surname"));
             owner.setDateOfBirth(set.getDate("owner_birth_date"));
             Car car = new Car();
-            car.setCarId(set.getInt("car_id"));
+            car.setCarId(new BigInteger(String.valueOf(set.getInt("car_id"))));
             car.setAge(set.getInt("age"));
             car.setBrand(set.getString("brand"));
             car.setModel(set.getString("model"));
@@ -246,7 +247,7 @@ public class DAOOracle implements DAOInterface {
     public void deleteCar(Car car) throws CarDBException {
         try (Connection connection = getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(CAR_DELETE);
-            pstmt.setInt(1, car.getCarId());
+            pstmt.setObject(1, car.getCarId());
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -256,12 +257,12 @@ public class DAOOracle implements DAOInterface {
         Car car = null;
         if (set.next()) {
             Owner owner = new Owner();
-            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setOwnerCode((BigInteger) set.getObject("owner_code"));
             owner.setName(set.getString("owner_name"));
             owner.setSurname(set.getString("owner_surname"));
             owner.setDateOfBirth(set.getDate("owner_birth_date"));
             car = new Car();
-            car.setCarId(set.getInt("car_id"));
+            car.setCarId(new BigInteger(String.valueOf(set.getInt("car_id"))));
             car.setAge(set.getInt("age"));
             car.setBrand(set.getString("brand"));
             car.setModel(set.getString("model"));
@@ -274,7 +275,7 @@ public class DAOOracle implements DAOInterface {
     private void mapOwner(ResultSet set, List<Owner> owners) throws SQLException {
         while (set.next()) {
             Owner owner = new Owner();
-            owner.setOwnerCode(set.getInt("owner_code"));
+            owner.setOwnerCode((BigInteger) set.getObject("owner_code"));
             owner.setName(set.getString("name"));
             owner.setSurname(set.getString("surname"));
             owner.setDateOfBirth(set.getDate("birth_date"));

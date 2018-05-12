@@ -7,11 +7,10 @@ package carsapplication.hibernate;
 
 import carsapplication.model.Car;
 import carsapplication.model.Owner;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
@@ -21,37 +20,30 @@ import org.hibernate.cfg.Configuration;
  */
 public class HibernateUtil {
 
-    private static final SessionFactory sessionFactory;
+    private static final SessionFactory sessionFactory = buildSessionFactory();
     
     private static SessionFactory buildSessionFactory() {
         try {
             Configuration config = new Configuration();
             config.addAnnotatedClass(Owner.class);
             config.addAnnotatedClass(Car.class);
+            config.configure("carsapplication/hibernate/hibernate.cfg.xml");
             
-            return config
-                    .configure("carsapplication/hibernate/hibernate.cfg.xml")
-                    .buildSessionFactory(new StandardServiceRegistryBuilder()
-                            .build());
+            ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+            
+            return config.buildSessionFactory(registry); 
         } catch (Throwable e) {
             System.err.println("Hibernate Session Factory creation failed");
             throw new ExceptionInInitializerError(e);
         }
     }
     
-    static {
-        try {
-            // Create the SessionFactory from standard (hibernate.cfg.xml) 
-            // config file.
-            sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
-        } catch (Throwable ex) {
-            // Log the exception. 
-            System.err.println("Initial SessionFactory creation failed." + ex);
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-    
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
+    
+    public static void shutdown() {
+        // Close caches and connection pools
+        getSessionFactory().close();
+}
 }
