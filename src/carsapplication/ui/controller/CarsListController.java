@@ -5,11 +5,13 @@
  */
 package carsapplication.ui.controller;
 
+import carsapplication.exception.CarDBException;
 import carsapplication.exception.NoCarException;
 import carsapplication.model.Car;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -78,10 +80,11 @@ public class CarsListController extends GenericController {
     private Button btnUpdate;
     
     private ToggleGroup toggleFilters;
-
+    private ObservableList<Car> tableData;
+    
     void initStage(Parent root) {
         try {
-            LOGGER.info("Initializing Main Window");
+            LOGGER.info("Initializing Car List");
 
             // Set scene
             Scene scene = new Scene(root);
@@ -93,11 +96,15 @@ public class CarsListController extends GenericController {
             stage.setResizable(false);
             stage.initStyle(StageStyle.DECORATED);
 
+            // Get session object
+            session = manager.getSession();
+            
             // On showing listener
             stage.setOnShowing(this::handleWindowShowing);
 
             // Initialize toggleGroup
             toggleFilters = new ToggleGroup();
+            toggleFilters.selectedToggleProperty().addListener(this::handleToggle);
 
             rbBrand.setToggleGroup(toggleFilters);
             rbColor.setToggleGroup(toggleFilters);
@@ -153,14 +160,19 @@ public class CarsListController extends GenericController {
             btnDeleteCar.setDisable(true);
 
             // Table Data
-            updateTable();
+            tableData = FXCollections.observableArrayList(manager.getCars());
+            tvCars.setItems(tableData);
             
             //
             rbPlate.setSelected(true);
             
             // Focus
             Platform.runLater(()->tfSearch.requestFocus());
+        } catch (NoCarException e) {
+            e.printStackTrace();
+            showWarningAlert("No cars");
         } catch (Exception e) {
+            e.printStackTrace();
             showErrorAlert("Error loading data");
         }
     }
@@ -177,9 +189,9 @@ public class CarsListController extends GenericController {
             Parent root = (Parent) loader.load();
             CarsFormController controller = (CarsFormController) loader.getController();
             controller.setUsersManager(manager);
-            controller.setSession(manager.getSession());
             session.put("newCar", false);
             session.put("currentCar", (Car) tvCars.getSelectionModel().getSelectedItem());
+            controller.setSession(session);
             controller.initStage(root);
             stage.hide();
         } catch (Exception e) {
@@ -201,6 +213,7 @@ public class CarsListController extends GenericController {
             CarsFormController controller = (CarsFormController) loader.getController();
             controller.setUsersManager(manager);
             controller.setSession(manager.getSession());
+            System.out.println(session == null ? "NULL" : "NOT NULL");
             session.put("newCar", true);
             controller.initStage(root);
             stage.hide();
@@ -228,7 +241,10 @@ public class CarsListController extends GenericController {
     
     public void handleDelete(ActionEvent event) {
         try {
-            manager.deleteCar((Car) tvCars.getSelectionModel().getSelectedItem());
+            Car car = (Car) tvCars.getSelectionModel().getSelectedItem();
+            manager.deleteCar(car);
+            tvCars.getItems().remove(car);
+            tvCars.getSelectionModel().clearSelection();
         } catch (Exception e) {
             showErrorAlert("Error deleting car");
         }
@@ -244,25 +260,56 @@ public class CarsListController extends GenericController {
         }
     }
 
+    
+    public void handleToggle(ObservableValue observable, Object oldValue, Object newValue) {
+        if (newValue != null) {
+            tfSearch.setText("");
+            resetTable();
+        }
+    }
+            
     private void updateTable() {
         try {
-        if (tfSearch.getText().trim().equals("")) 
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCars()));
-        else if (rbPlate.isSelected())
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCarsByPlate(tfSearch.getText())));
-        else if (rbBrand.isSelected())
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCarsByBrand(tfSearch.getText())));
-        else if (rbModel.isSelected())
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCarsByModel(tfSearch.getText())));
-        else if (rbColor.isSelected())
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCarsByColor(tfSearch.getText())));
-        else if (rbOwner.isSelected())
-            tvCars.setItems(FXCollections.observableArrayList(manager.getCarsByOwnerName(tfSearch.getText())));
+        if (tfSearch.getText().trim().equals("")) {
+            tableData = FXCollections.observableArrayList(manager.getCars());
+            tvCars.setItems(tableData);
+        }
+        else if (rbPlate.isSelected()) {
+            tableData = FXCollections.observableArrayList(manager.getCarsByPlate(tfSearch.getText()));
+            tvCars.setItems(tableData);
+        }
+        else if (rbBrand.isSelected()) {
+            tableData = FXCollections.observableArrayList(manager.getCarsByBrand(tfSearch.getText()));
+            tvCars.setItems(tableData);
+        }
+        else if (rbModel.isSelected()) {
+            tableData = FXCollections.observableArrayList(manager.getCarsByModel(tfSearch.getText()));
+            tvCars.setItems(tableData);
+        }
+        else if (rbColor.isSelected()) {
+            tableData = FXCollections.observableArrayList(manager.getCarsByColor(tfSearch.getText()));
+            tvCars.setItems(tableData);
+        }
+        else if (rbOwner.isSelected()) {
+            tableData = FXCollections.observableArrayList(manager.getCarsByOwnerName(tfSearch.getText()));
+            tvCars.setItems(tableData);
+        }
         } catch (NoCarException e) {
             tvCars.setItems(null);
             showWarningAlert("No cars found");
         } catch (Exception e) {
             e.printStackTrace();
+            showErrorAlert("Unexpected error");
+        }
+    }
+
+    private void resetTable() {
+        try {
+            tableData = FXCollections.observableArrayList(manager.getCars());
+        } catch (NoCarException ex) {
+            tvCars.setItems(null);
+            showWarningAlert("No cars found");
+        } catch (CarDBException ex) {
             showErrorAlert("Unexpected error");
         }
     }

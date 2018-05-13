@@ -16,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,6 +28,12 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name="owners", schema="cars_db")
+@NamedQueries({
+    @NamedQuery(
+            name="findOwners",
+            query="SELECT o FROM Owner o ORDER BY o.surname"
+    )
+})
 public class Owner implements Serializable {
     // Fields
     private final SimpleObjectProperty<BigInteger> ownerCode;

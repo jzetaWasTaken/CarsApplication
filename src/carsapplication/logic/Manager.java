@@ -34,7 +34,7 @@ public class Manager implements ManagerInterface {
     
     @Override 
     public Map getSession() {
-        return this.SESSION;
+        return SESSION;
     }
     
     @Override

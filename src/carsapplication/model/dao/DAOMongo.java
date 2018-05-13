@@ -282,7 +282,7 @@ public class DAOMongo implements DAOInterface {
             String carIdHex = doc.get("_id").toString();
             BigInteger id = new BigInteger(carIdHex, 16);
             car.setCarId(id);
-            car.setAge(doc.getDouble("age").intValue());
+            car.setAge((Integer) doc.getDouble("age").intValue());
             car.setBrand(doc.getString("brand"));
             car.setColor(doc.getString("color"));
             car.setModel(doc.getString("model"));

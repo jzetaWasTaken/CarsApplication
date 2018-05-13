@@ -10,6 +10,8 @@ import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.Date;
@@ -34,7 +36,7 @@ public class DAOOracle implements DAOInterface {
     private String dbPort;
     
     private static final String CAR_SQL = 
-            "SELECT CAR_ID, AGE, BRAND, MODEL, PLATE_NUMBER,"
+            "SELECT CAR_ID, AGE, BRAND, MODEL, PLATE_NUMBER, COLOR,"
             + "DEREF(C.CAR_OWNER).OWNER_CODE OWNER_CODE,"
             + "DEREF(C.CAR_OWNER).NAME OWNER_NAME,"
             + "DEREF(C.CAR_OWNER).SURNAME OWNER_SURNAME,"
@@ -59,11 +61,17 @@ public class DAOOracle implements DAOInterface {
             Properties config = new Properties();
             config.load(input);
             host = config.getProperty("ip");
+            System.out.println("HOST: " + host);
             dbName = config.getProperty("dbname");
-            dbUser = config.getProperty("user");
-            dbPassword = config.getProperty("password");
+            System.out.println("DBNAME: " + dbName);
             dbPort = config.getProperty("port");
+            System.out.println("PORT: " + dbPort);
+            dbUser = config.getProperty("user");
+            System.out.println("USER: " + dbUser);
+            dbPassword = config.getProperty("password");
+            System.out.println("PASSW: "+dbPassword);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new CarDBException(e.getMessage());
         }
     }
@@ -75,6 +83,7 @@ public class DAOOracle implements DAOInterface {
             String url = String.format("jdbc:oracle:thin:@%s:%s:%s", host, dbPort, dbName);
             connection = DriverManager.getConnection(url, dbUser, dbPassword);
         } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
             throw new CarDBException(e.getMessage());
         }
         return connection;
@@ -115,8 +124,8 @@ public class DAOOracle implements DAOInterface {
             String sql = CAR_SQL + " WHERE C.CAR_OWNER.NAME LIKE '%' || ? || '%' "
                     + "OR C.CAR_OWNER.SURNAME LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, ownerName);
-            pstmt.setString(2, ownerName);
+            pstmt.setString(1, ownerName.toUpperCase());
+            pstmt.setString(2, ownerName.toUpperCase());
             ResultSet set = pstmt.executeQuery();
             mapCar(set, cars);
         } catch (SQLException e) {
@@ -157,7 +166,7 @@ public class DAOOracle implements DAOInterface {
 
     @Override
     public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
-        List<Car> cars = null;
+        List<Car> cars = new ArrayList<>();
         try (Connection connection = getConnection()) {
             String sql = CAR_SQL + " WHERE C.PLATE_NUMBER LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -229,7 +238,7 @@ public class DAOOracle implements DAOInterface {
     private void mapCar(ResultSet set, List<Car> cars) throws SQLException {
         while (set.next()) {
             Owner owner = new Owner();
-            owner.setOwnerCode((BigInteger) set.getObject("owner_code"));
+            owner.setOwnerCode(((BigDecimal)set.getObject("owner_code")).toBigInteger());
             owner.setName(set.getString("owner_name"));
             owner.setSurname(set.getString("owner_surname"));
             owner.setDateOfBirth(set.getDate("owner_birth_date"));
@@ -239,6 +248,7 @@ public class DAOOracle implements DAOInterface {
             car.setBrand(set.getString("brand"));
             car.setModel(set.getString("model"));
             car.setPlateNumber(set.getString("plate_number"));
+            car.setColor(set.getString("color"));
             car.setOwner(owner);
             cars.add(car);
         }
@@ -276,7 +286,7 @@ public class DAOOracle implements DAOInterface {
     private void mapOwner(ResultSet set, List<Owner> owners) throws SQLException {
         while (set.next()) {
             Owner owner = new Owner();
-            owner.setOwnerCode((BigInteger) set.getObject("owner_code"));
+            owner.setOwnerCode(((BigDecimal)set.getObject("owner_code")).toBigInteger());
             owner.setName(set.getString("name"));
             owner.setSurname(set.getString("surname"));
             owner.setDateOfBirth(set.getDate("birth_date"));

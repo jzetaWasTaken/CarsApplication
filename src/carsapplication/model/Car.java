@@ -20,6 +20,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -28,6 +30,32 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="cars", schema="cars_db")
+@NamedQueries({
+    @NamedQuery(
+            name="findCars",
+            query="SELECT c FROM Car c ORDER BY c.brand"
+    ),
+    @NamedQuery(
+            name="findCarsByBrand",
+            query="SELECT c FROM Car c WHERE c.brand LIKE concat('%', :brand, '%') ORDER BY c.brand"
+    ),
+    @NamedQuery(
+            name="findCarsByOwnerName",
+            query="SELECT c FROM Car c WHERE c.owner.name LIKE concat('%', :owner, '%') OR c.owner.surname LIKE concat('%', :owner, '%') ORDER BY c.brand"
+    ),
+    @NamedQuery(
+            name="findCarsByColor",
+            query="SELECT c FROM Car c WHERE c.color LIKE concat('%', :color, '%') ORDER BY c.brand"
+    ),
+    @NamedQuery(
+            name="findCarsByModel",
+            query="SELECT c FROM Car c WHERE c.model LIKE concat('%', :model, '%') ORDER BY c.brand"
+    ),
+    @NamedQuery(
+            name="findCarsByPlate",
+            query="SELECT c FROM Car c WHERE c.plateNumber LIKE concat('%', :plate, '%') ORDER BY c.brand"
+    )
+})
 public class Car implements Serializable {
     // Fields
     private final SimpleObjectProperty<BigInteger> carId;
