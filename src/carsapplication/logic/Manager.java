@@ -13,7 +13,9 @@ import carsapplication.model.Owner;
 import carsapplication.model.dao.DAOFactory;
 import carsapplication.model.dao.DAOInterface;
 import carsapplication.model.dao.DBType;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -22,11 +24,17 @@ import java.util.List;
 public class Manager implements ManagerInterface {
 
     private final DAOInterface dao;
+    private static final Map SESSION = new HashMap<>();
     private static final String NO_CAR_MSG = "No cars found";
     private static final String NO_OWNER_MSG = "No owners found";
     
     Manager(DBType type) throws CarDBException {
         dao = DAOFactory.newDAO(type);
+    }
+    
+    @Override 
+    public Map getSession() {
+        return this.SESSION;
     }
     
     @Override
@@ -47,9 +55,9 @@ public class Manager implements ManagerInterface {
     }
 
     @Override
-    public List<Car> getCarsByOwner(Owner owner) 
+    public List<Car> getCarsByOwnerName(String ownerName) 
             throws NoCarException, CarDBException {
-        List<Car> cars = dao.findCarsByOwner(owner);
+        List<Car> cars = dao.findCarsByOwnerName(ownerName);
         if (cars == null || cars.isEmpty()) 
             throw new NoCarException(NO_CAR_MSG);
         return cars;
@@ -74,12 +82,12 @@ public class Manager implements ManagerInterface {
     }
 
     @Override
-    public Car getCar(String plateNumber) 
+    public List<Car> getCarsByPlate(String plateNumber) 
             throws NoCarException, CarDBException {
-        Car car = dao.findCar(plateNumber);
-        if (car == null) 
+        List<Car> cars = dao.findCarsByPlate(plateNumber);
+        if (cars == null || cars.isEmpty()) 
             throw new NoCarException(NO_CAR_MSG);
-        return car;
+        return cars;
     }
 
     @Override
@@ -103,5 +111,10 @@ public class Manager implements ManagerInterface {
     @Override
     public void modifyCar(Car car) throws CarDBException {
         dao.updateCar(car);
+    }
+
+    @Override
+    public void deleteCar(Car car) throws CarDBException {
+        dao.deleteCar(car);
     }
 }

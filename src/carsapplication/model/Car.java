@@ -7,14 +7,18 @@ package carsapplication.model;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -97,12 +101,59 @@ public class Car implements Serializable {
     }
     
     @ManyToOne
+    @JoinColumn(name="owner_code")
     public Owner getOwner() {
         return owner.get();
     }
     
     public void setOwner(Owner owner) {
         this.owner.set(owner);
+    }
+
+    public StringProperty formattedAge() {
+        return new SimpleStringProperty(
+                String.format("%s year(s)", this.getAge().toString())
+        );
+    }
+
+    public ObservableValue<String> ownerFullName() {
+        return new SimpleStringProperty(this.getOwner().toString());
+    }
+
+    @Override
+    public String toString() {
+        return "Car{" + "carId=" + carId + ", plateNumber=" + plateNumber 
+                + ", brand=" + brand + ", model=" + model + ", color=" + color 
+                + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.carId);
+        hash = 59 * hash + Objects.hashCode(this.plateNumber);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Car other = (Car) obj;
+        if (!Objects.equals(this.carId, other.carId)) {
+            return false;
+        }
+        if (!Objects.equals(this.plateNumber, other.plateNumber)) {
+            return false;
+        }
+        return true;
     }
 }
 

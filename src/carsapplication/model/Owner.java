@@ -8,6 +8,7 @@ package carsapplication.model;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Objects;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javax.persistence.Column;
@@ -75,6 +76,36 @@ public class Owner implements Serializable {
     
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth.set(dateOfBirth);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", this.getName(), this.getSurname());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.ownerCode);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Owner other = (Owner) obj;
+        if (!Objects.equals(this.ownerCode, other.ownerCode)) {
+            return false;
+        }
+        return true;
     }
 }
 

@@ -5,14 +5,10 @@
  */
 package carsapplication.ui.controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
 /**
@@ -20,12 +16,8 @@ import javafx.scene.control.TextField;
  *
  * @author jon
  */
-public class OwnersFormController extends GenericController {
+public class CarsFormController extends GenericController {
 
-    @FXML
-    private Button btnCancel;
-    @FXML
-    private Button btnSave;
     @FXML
     private TextField tfPlate;
     @FXML
@@ -38,9 +30,14 @@ public class OwnersFormController extends GenericController {
     private TextField tfAge;
     @FXML
     private ComboBox<?> cbOwner;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnSave;
 
     void initStage(Parent root) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-      
+
+    
 }

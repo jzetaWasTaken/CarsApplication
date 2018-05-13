@@ -64,14 +64,14 @@ public class DAOHibernate implements DAOInterface {
     }
 
     @Override
-    public List<Car> findCarsByOwner(Owner owner) throws CarDBException {
+    public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException {
         Session session = null;
         List<Car> cars = null;
         try {
             session = factory.openSession();
             tx = session.beginTransaction();
             cars = session.getNamedQuery("findCarsByOwner")
-                    .setParameter("owner", owner)
+                    .setParameter("owner", ownerName)
                     .list();
             tx.commit();
         } catch (HibernateException e) {
@@ -124,15 +124,15 @@ public class DAOHibernate implements DAOInterface {
     }
 
     @Override
-    public Car findCar(String plateNumber) throws CarDBException {
+    public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
         Session session = null;
-        Car car = null;
+        List<Car> cars = null;
         try {
             session = factory.openSession();
             tx = session.beginTransaction();
-            car = (Car) session.getNamedQuery("findCar")
+            cars = session.getNamedQuery("findCar")
                     .setParameter("plate_number", plateNumber)
-                    .uniqueResult();
+                    .list();
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -140,7 +140,7 @@ public class DAOHibernate implements DAOInterface {
         } finally {
             if (session != null) session.close();
         }
-        return car;
+        return cars;
     }
 
     @Override

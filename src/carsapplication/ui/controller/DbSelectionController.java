@@ -35,27 +35,31 @@ public class DbSelectionController extends GenericController {
     private Button btnHibernate;
 
     public void initStage(Parent root) {
-        LOGGER.info("Initializing Login Window");
-        
-        // Set scene
-        Scene scene = new Scene(root);
-        if (stage == null) stage = new Stage();
-        stage.setScene(scene);
-        
-        // Set stage properties
-        stage.setTitle("Database Selection");
-        stage.setResizable(false);
-        
-        // On showing listener
-        stage.setOnShowing(this::handleWindowShowing);
-        
-        // Graphical node listeners
-        btnOracle.setOnAction(this::handleOracleAction);
-        btnMongo.setOnAction(this::handleMongoAction);
-        btnHibernate.setOnAction(this::handleHibernateAction);
-       
-        // Show stage
-        stage.show();
+        try {
+            LOGGER.info("Initializing Database Selection Window");
+
+            // Set scene
+            Scene scene = new Scene(root);
+            if (stage == null) stage = new Stage();
+            stage.setScene(scene);
+
+            // Set stage properties
+            stage.setTitle("Database Selection");
+            stage.setResizable(false);
+
+            // On showing listener
+            stage.setOnShowing(this::handleWindowShowing);
+
+            // Graphical node listeners
+            btnOracle.setOnAction(this::handleOracleAction);
+            btnMongo.setOnAction(this::handleMongoAction);
+            btnHibernate.setOnAction(this::handleHibernateAction);
+
+            // Show stage
+            stage.show();
+        } catch (Exception e) {
+            showErrorAlert("Error loading Database Selection Window");
+        }
     }
     
     public void handleWindowShowing(WindowEvent event) {
@@ -93,9 +97,8 @@ public class DbSelectionController extends GenericController {
             Parent root = (Parent) loader.load();
             CarsListController controller = (CarsListController)loader.getController();
             controller.setUsersManager(ManagerFactory.newManager(type));
-            controller.setSession(session);
-            controller.initStage(root);
             stage.hide();
+            controller.initStage(root);
         } catch (CarDBException e) {
             e.printStackTrace();
             showErrorAlert("Database Error");

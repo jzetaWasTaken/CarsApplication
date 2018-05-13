@@ -17,10 +17,10 @@ import java.util.List;
 public interface DAOInterface {
     public List<Car> findCars() throws CarDBException;
     public List<Car> findCarsByBrand(String brand) throws CarDBException;
-    public List<Car> findCarsByOwner(Owner owner) throws CarDBException;
+    public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException;
     public List<Car> findCarsByColor(String color) throws CarDBException;
     public List<Car> findCarsByModel(String model) throws CarDBException;
-    public Car findCar(String plateNumber) throws CarDBException;
+    public List<Car> findCarsByPlate(String plateNumber) throws CarDBException;
     public List<Owner> findOwners() throws CarDBException;
     public void createCar(Car car) throws CarDBException;
     public void createOwner(Owner owner) throws CarDBException;

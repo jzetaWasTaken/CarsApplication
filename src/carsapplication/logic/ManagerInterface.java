@@ -11,6 +11,7 @@ import carsapplication.exception.NoOwnerException;
 import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -18,14 +19,16 @@ import java.util.List;
  */
 public interface ManagerInterface {
     
+    public Map getSession();
     public List<Car> getCars() throws NoCarException, CarDBException;
     public List<Car> getCarsByBrand(String brand) throws NoCarException, CarDBException;
-    public List<Car> getCarsByOwner(Owner owner) throws NoCarException, CarDBException;
+    public List<Car> getCarsByOwnerName(String ownerName) throws NoCarException, CarDBException;
     public List<Car> getCarsByColor(String color) throws NoCarException, CarDBException;
     public List<Car> getCarsByModel(String model) throws NoCarException, CarDBException;
-    public Car getCar(String plateNumber) throws NoCarException, CarDBException;
+    public List<Car> getCarsByPlate(String plateNumber) throws NoCarException, CarDBException;
     public List<Owner> getOwners() throws NoOwnerException, CarDBException;
     public void registerCar(Car car) throws CarDBException;
     public void registerOwner(Owner owner) throws CarDBException;
     public void modifyCar(Car car) throws CarDBException;
+    public void deleteCar(Car car) throws CarDBException;
 }

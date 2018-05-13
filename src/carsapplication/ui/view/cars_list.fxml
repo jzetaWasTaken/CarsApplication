@@ -17,11 +17,16 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TextField fx:id="tfSearch" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="300.0" promptText="Search">
+                  <TextField fx:id="tfSearch" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" promptText="Search">
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets />
                      </HBox.margin>
                   </TextField>
+                  <Button fx:id="btnSearch" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+                     <HBox.margin>
+                        <Insets right="60.0" />
+                     </HBox.margin>
+                  </Button>
                   <RadioButton fx:id="rbPlate" mnemonicParsing="false" text="Plate Number">
                      <HBox.margin>
                         <Insets right="40.0" />
@@ -38,11 +43,6 @@
                      </HBox.margin>
                   </RadioButton>
                   <RadioButton fx:id="rbColor" mnemonicParsing="false" text="Color">
-                     <HBox.margin>
-                        <Insets right="40.0" />
-                     </HBox.margin>
-                  </RadioButton>
-                  <RadioButton fx:id="rbAge" mnemonicParsing="false" text="Age">
                      <HBox.margin>
                         <Insets right="40.0" />
                      </HBox.margin>
@@ -67,6 +67,7 @@
                       <Button fx:id="btnNewOwner" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="200.0" text="New Owner" />
                         <Button fx:id="btnNewCar" mnemonicParsing="false" text="New Car" />
                         <Button fx:id="btnDeleteCar" mnemonicParsing="false" text="Delete Car" />
+                        <Button fx:id="btnUpdate" mnemonicParsing="false" text="Edit Car" />
                     </buttons>
                   </ButtonBar>
                   <ButtonBar prefHeight="40.0" prefWidth="200.0">

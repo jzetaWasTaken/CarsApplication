@@ -80,7 +80,6 @@ public class DAOOracle implements DAOInterface {
         return connection;
     }
 
-    
     @Override
     public List<Car> findCars() throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -98,7 +97,7 @@ public class DAOOracle implements DAOInterface {
     public List<Car> findCarsByBrand(String brand) throws CarDBException {
         List<Car> cars = new ArrayList<>();
         try (Connection connection = getConnection()) {
-            String sql = CAR_SQL + " WHERE C.BRAND=?";
+            String sql = CAR_SQL + " WHERE C.BRAND LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, brand.toUpperCase());
             ResultSet set = pstmt.executeQuery();
@@ -110,12 +109,14 @@ public class DAOOracle implements DAOInterface {
     }
 
     @Override
-    public List<Car> findCarsByOwner(Owner owner) throws CarDBException {
+    public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException {
         List<Car> cars = new ArrayList<>();
         try (Connection connection = getConnection()) {
-            String sql = CAR_SQL + " WHERE C.CAR_OWNER.OWNER_CODE=?";
+            String sql = CAR_SQL + " WHERE C.CAR_OWNER.NAME LIKE '%' || ? || '%' "
+                    + "OR C.CAR_OWNER.SURNAME LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setObject(1, owner.getOwnerCode());
+            pstmt.setString(1, ownerName);
+            pstmt.setString(2, ownerName);
             ResultSet set = pstmt.executeQuery();
             mapCar(set, cars);
         } catch (SQLException e) {
@@ -128,7 +129,7 @@ public class DAOOracle implements DAOInterface {
     public List<Car> findCarsByColor(String color) throws CarDBException {
         List<Car> cars = new ArrayList<>();
         try (Connection connection = getConnection()) {
-            String sql = CAR_SQL + " WHERE C.COLOR=?";
+            String sql = CAR_SQL + " WHERE C.COLOR LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, color.toUpperCase());
             ResultSet set = pstmt.executeQuery();
@@ -143,7 +144,7 @@ public class DAOOracle implements DAOInterface {
     public List<Car> findCarsByModel(String model) throws CarDBException {
         List<Car> cars = new ArrayList<>();
         try (Connection connection = getConnection()) {
-            String sql = CAR_SQL + " WHERE C.MODEL=?";
+            String sql = CAR_SQL + " WHERE C.MODEL LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, model.toUpperCase());
             ResultSet set = pstmt.executeQuery();
@@ -155,18 +156,18 @@ public class DAOOracle implements DAOInterface {
     }
 
     @Override
-    public Car findCar(String plateNumber) throws CarDBException {
-        Car car = null;
+    public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
+        List<Car> cars = null;
         try (Connection connection = getConnection()) {
-            String sql = CAR_SQL + " WHERE C.PLATE_NUMBER=?";
+            String sql = CAR_SQL + " WHERE C.PLATE_NUMBER LIKE '%' || ? || '%'";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, plateNumber.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            car = mapCar(set);
+            mapCar(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
-        return car;
+        return cars;
     }
 
     @Override
