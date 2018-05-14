@@ -7,14 +7,10 @@ package carsapplication.ui.controller;
 
 import carsapplication.exception.CarDBException;
 import carsapplication.exception.NoOwnerException;
-import carsapplication.logic.ManagerFactory;
 import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import static carsapplication.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -57,6 +52,7 @@ public class CarsFormController extends GenericController {
 
     private ObservableList<Owner> comboData;
     private boolean newCar;
+    Car car;
     
     void initStage(Parent root) {
         try {
@@ -101,13 +97,20 @@ public class CarsFormController extends GenericController {
 
     public void handleWindowShowing(WindowEvent event) {
         if (!newCar) {
-                Car car = (Car) session.get("currentCar");
-                tfBrand.setText(car.getBrand());
-                tfBrand.setDisable(true);
-                tfModel.setText(car.getModel());
-                tfModel.setDisable(true);
-            }
+            car = (Car) session.get("currentCar");
+            tfBrand.setText(car.getBrand());
+            tfAge.setText(car.getAge().toString());
+            tfColor.setText(car.getColor());
+            tfPlate.setText(car.getPlateNumber());
+            tfModel.setText(car.getModel());
+            cbOwner.getSelectionModel().select(car.getOwner());
+
+            tfModel.setDisable(true);
+            tfBrand.setDisable(true);
+            btnSave.setDisable(false);
+        } else {
             btnSave.setDisable(true);
+        }
         initComboData();
     }
 
@@ -125,20 +128,23 @@ public class CarsFormController extends GenericController {
     }
     
     public void handleCancel(ActionEvent event) {
-        try {
-            loadWindow();
-        } catch (IOException e) {
-            showErrorAlert("Error Loading Window");
-        }
+        stage.close();
+        ((Stage) session.get("oldStage")).show();
+        //loadCarsList();
     }
     
     public void handleSave(ActionEvent event) {
         try {
-            manager.registerCar(getCar());
-            loadWindow();
-        } catch (IOException e) {
-            showErrorAlert("Error Loading Window");
-        } catch (CarDBException ex) {
+            mapCar();
+            if (newCar)
+                manager.registerCar(car);
+            else
+                manager.modifyCar(car);
+            stage.close();
+            ((Stage) session.get("oldStage")).show(); 
+            //loadCarsList();
+        } catch (CarDBException e) {
+            e.printStackTrace();
             showErrorAlert("Error");
         } catch (NumberFormatException e) {
             showErrorAlert("Age must be a positive integer");
@@ -146,28 +152,16 @@ public class CarsFormController extends GenericController {
     }
     
     private void handleData() {
-        System.out.println("handleData");
         if (tfAge.getText().trim().length() > 0 && tfBrand.getText().trim().length() > 0
                 && tfColor.getText().trim().length() > 0 && tfModel.getText().trim().length() > 0
-                && tfPlate.getText().trim().length() > 0 && !cbOwner.getSelectionModel().isEmpty())
+                && tfPlate.getText().trim().length() > 0 && cbOwner.getValue() != null)
             btnSave.setDisable(false);
         else 
             btnSave.setDisable(true);
     }
-    
-    private void loadWindow() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/carsapplication/ui/view/cars_list.fxml")
-        );
-        Parent root = (Parent) loader.load();
-        CarsListController controller = (CarsListController)loader.getController();
-        controller.setUsersManager(manager);
-        stage.hide();
-        controller.initStage(root);
-    }
 
-    private Car getCar() throws NumberFormatException {
-        Car car = new Car();
+    private void mapCar() throws NumberFormatException {
+        if (car == null) car = new Car();
         car.setAge(Integer.parseInt(tfAge.getText()));
         if (car.getAge() < 0)
             throw new NumberFormatException();
@@ -176,8 +170,6 @@ public class CarsFormController extends GenericController {
         car.setModel(tfModel.getText());
         car.setOwner((Owner) cbOwner.getSelectionModel().getSelectedItem());
         car.setPlateNumber(tfPlate.getText());
-        
-        return car;
     }
     
     private void initComboData() {

@@ -6,9 +6,12 @@
 package carsapplication.ui.controller;
 
 import carsapplication.logic.ManagerInterface;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -129,4 +132,17 @@ public abstract class GenericController {
         final Optional<ButtonType> result = alert.showAndWait();
         return result;
     }
+    
+    /*
+    protected void loadCarsList() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/carsapplication/ui/view/cars_list.fxml")
+        );
+        Parent root = (Parent) loader.load();
+        CarsListController controller = (CarsListController)loader.getController();
+        controller.setUsersManager(manager);
+        stage.hide();
+        controller.initStage(root);
+    }
+    */
 }

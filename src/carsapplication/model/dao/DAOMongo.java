@@ -39,7 +39,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCars() throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             FindIterable<Document> carsDoc = database.getCollection("cars").find();
             cars = mapCars(carsDoc);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCarsByBrand(String brand) throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             Pattern pattern = Pattern.compile(brand, Pattern.CASE_INSENSITIVE); 
             BasicDBObject query = new BasicDBObject("brand", pattern);
@@ -69,7 +69,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             List<Owner> owners = findOwnersByName(ownerName);
             List<String> codes = new ArrayList<>();
@@ -92,7 +92,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCarsByColor(String color) throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             Pattern pattern = Pattern.compile(color, Pattern.CASE_INSENSITIVE); 
             BasicDBObject query = new BasicDBObject("color", pattern);
@@ -108,7 +108,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCarsByModel(String model) throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             Pattern pattern = Pattern.compile(model, Pattern.CASE_INSENSITIVE); 
             BasicDBObject query = new BasicDBObject("model", pattern);
@@ -124,7 +124,7 @@ public class DAOMongo implements DAOInterface {
     public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
         List<Car> cars = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             Pattern pattern = Pattern.compile(plateNumber, Pattern.CASE_INSENSITIVE); 
             BasicDBObject query = new BasicDBObject("plate_number", pattern);
@@ -140,7 +140,7 @@ public class DAOMongo implements DAOInterface {
     public List<Owner> findOwners() throws CarDBException {
         List<Owner> owners = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             FindIterable<Document> ownersDoc = database.getCollection("owners").find();
             owners = mapOwners(ownersDoc);
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class DAOMongo implements DAOInterface {
     private Owner findOwnerByCode(BigInteger code) throws CarDBException {
         Owner owner = null;
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("owners");
             String codeHex = code.toString(16);
             BasicDBObject query = new BasicDBObject("_id", new ObjectId(codeHex));
@@ -172,7 +172,7 @@ public class DAOMongo implements DAOInterface {
     private List<Owner> findOwnersByName(String name) throws CarDBException {
         List<Owner> owners = new ArrayList<>();
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("owners");
             List<BasicDBObject> listOr = new ArrayList<>();
             Pattern pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE); 
@@ -194,13 +194,13 @@ public class DAOMongo implements DAOInterface {
     @Override
     public void createCar(Car car) throws CarDBException {
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             Document doc = new Document("brand", car.getBrand())
                     .append("plate_number", car.getPlateNumber())
                     .append("model", car.getModel())
                     .append("color", car.getColor())
-                    .append("age", car.getAge())
+                    .append("age", car.getAge().toString())
                     .append("owner", car.getOwner().getOwnerCode().toString(16));
             collection.insertOne(doc);
         }
@@ -209,7 +209,7 @@ public class DAOMongo implements DAOInterface {
     @Override
     public void createOwner(Owner owner) throws CarDBException {
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("owners");
             Document doc = new Document("name", owner.getName())
                     .append("surname", owner.getSurname())
@@ -221,7 +221,7 @@ public class DAOMongo implements DAOInterface {
     @Override
     public void updateCar(Car car) throws CarDBException {
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             BasicDBObject query = 
                     new BasicDBObject("_id", new ObjectId(car.getCarId().toString(16)));
@@ -229,16 +229,16 @@ public class DAOMongo implements DAOInterface {
                     .append("plate_number", car.getPlateNumber())
                     .append("model", car.getModel())
                     .append("color", car.getColor())
-                    .append("age", car.getAge())
+                    .append("age", car.getAge().toString())
                     .append("owner", car.getOwner().getOwnerCode().toString(16));
-            collection.findOneAndUpdate(query, doc);
+            collection.updateOne(query, doc);
         }
     }
 
     @Override
     public void deleteCar(Car car) throws CarDBException {
         try (MongoClient client = getClient()) {
-            MongoDatabase database = client.getDatabase("cars_db");
+            MongoDatabase database = client.getDatabase("db_cars");
             MongoCollection<Document> collection = database.getCollection("cars");
             BasicDBObject query = 
                     new BasicDBObject("_id", new ObjectId(car.getCarId().toString(16)));
@@ -282,7 +282,9 @@ public class DAOMongo implements DAOInterface {
             String carIdHex = doc.get("_id").toString();
             BigInteger id = new BigInteger(carIdHex, 16);
             car.setCarId(id);
-            car.setAge((Integer) doc.getDouble("age").intValue());
+            //System.out.println(doc.get("age"));
+            //System.out.println(doc.get("age").getClass().getName());
+            car.setAge(new Integer(doc.getString("age")));
             car.setBrand(doc.getString("brand"));
             car.setColor(doc.getString("color"));
             car.setModel(doc.getString("model"));

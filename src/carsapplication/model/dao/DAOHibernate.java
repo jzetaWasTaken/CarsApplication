@@ -76,6 +76,7 @@ public class DAOHibernate implements DAOInterface {
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
+            e.printStackTrace();
             throw new CarDBException(e.getCause());
         } finally {
             if (session != null) session.close();
@@ -130,12 +131,13 @@ public class DAOHibernate implements DAOInterface {
         try {
             session = factory.openSession();
             tx = session.beginTransaction();
-            cars = session.getNamedQuery("findCar")
-                    .setParameter("plate_number", plateNumber)
+            cars = session.getNamedQuery("findCarsByPlate")
+                    .setParameter("plate", plateNumber)
                     .list();
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
+            e.printStackTrace();
             throw new CarDBException(e.getCause());
         } finally {
             if (session != null) session.close();

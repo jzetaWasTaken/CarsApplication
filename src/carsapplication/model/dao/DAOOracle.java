@@ -53,7 +53,8 @@ public class DAOOracle implements DAOInterface {
             "INSERT INTO OWNERS VALUES(CODE_SEQ.NEXTVAL,?,?,?)";
     private static final String CAR_UPDATE = 
             "UPDATE CARS SET PLATE_NUMBER = ?, COLOR = ?, AGE = ?,"
-            + "CAR_OWNER = (SELECT REF(O) FROM OWNERS WHERE O.OWNER_CODE = ?)";
+            + "CAR_OWNER = (SELECT REF(O) FROM OWNERS O WHERE O.OWNER_CODE = ?) "
+            + "WHERE CAR_ID = ?";
     private static final String CAR_DELETE = "DELETE CARS WHERE CAR_ID = ?";
 
     public DAOOracle() throws CarDBException {
@@ -95,7 +96,7 @@ public class DAOOracle implements DAOInterface {
         try (Connection connection = getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(CAR_SQL);
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -110,7 +111,7 @@ public class DAOOracle implements DAOInterface {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, brand.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -127,7 +128,7 @@ public class DAOOracle implements DAOInterface {
             pstmt.setString(1, ownerName.toUpperCase());
             pstmt.setString(2, ownerName.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -142,7 +143,7 @@ public class DAOOracle implements DAOInterface {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, color.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -157,7 +158,7 @@ public class DAOOracle implements DAOInterface {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, model.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -172,7 +173,7 @@ public class DAOOracle implements DAOInterface {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, plateNumber.toUpperCase());
             ResultSet set = pstmt.executeQuery();
-            mapCar(set, cars);
+            mapCars(set, cars);
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -217,6 +218,7 @@ public class DAOOracle implements DAOInterface {
             pstmt.setString(1, owner.getName().toUpperCase());
             pstmt.setString(2, owner.getSurname().toUpperCase());
             pstmt.setDate(3, new Date(owner.getDateOfBirth().getTime()));
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
@@ -225,17 +227,21 @@ public class DAOOracle implements DAOInterface {
     @Override
     public void updateCar(Car car) throws CarDBException {
         try (Connection connection = getConnection()) {
+            System.out.println(car.getOwner().getOwnerCode().toString());
             PreparedStatement pstmt = connection.prepareStatement(CAR_UPDATE);
             pstmt.setString(1, car.getPlateNumber());
             pstmt.setString(2, car.getColor());
             pstmt.setInt(3, car.getAge());
             pstmt.setObject(4, car.getOwner().getOwnerCode());
+            System.out.println(car.getCarId().toString());
+            pstmt.setInt(5, car.getCarId().intValue());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 
     }
     
-    private void mapCar(ResultSet set, List<Car> cars) throws SQLException {
+    private void mapCars(ResultSet set, List<Car> cars) throws SQLException {
         while (set.next()) {
             Owner owner = new Owner();
             owner.setOwnerCode(((BigDecimal)set.getObject("owner_code")).toBigInteger());
@@ -259,6 +265,7 @@ public class DAOOracle implements DAOInterface {
         try (Connection connection = getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(CAR_DELETE);
             pstmt.setObject(1, car.getCarId());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CarDBException(e);
         } 

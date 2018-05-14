@@ -97,7 +97,7 @@ public class DbSelectionController extends GenericController {
             Parent root = (Parent) loader.load();
             CarsListController controller = (CarsListController)loader.getController();
             controller.setUsersManager(ManagerFactory.newManager(type));
-            stage.hide();
+            stage.close();
             controller.initStage(root);
         } catch (CarDBException e) {
             e.printStackTrace();

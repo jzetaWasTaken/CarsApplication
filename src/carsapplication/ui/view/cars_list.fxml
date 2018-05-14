@@ -15,7 +15,7 @@
    <children>
       <VBox prefHeight="869.0" prefWidth="1227.0">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <HBox fx:id="rbAll" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <TextField fx:id="tfSearch" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" promptText="Search">
                      <HBox.margin>
@@ -27,6 +27,11 @@
                         <Insets right="60.0" />
                      </HBox.margin>
                   </Button>
+                  <RadioButton fx:id="rbAllCars" mnemonicParsing="false" text="All">
+                     <HBox.margin>
+                        <Insets right="150.0" />
+                     </HBox.margin>
+                  </RadioButton>
                   <RadioButton fx:id="rbPlate" mnemonicParsing="false" text="Plate Number">
                      <HBox.margin>
                         <Insets right="40.0" />

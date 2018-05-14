@@ -43,6 +43,8 @@ public class CarsListController extends GenericController {
     @FXML
     private TextField tfSearch;
     @FXML
+    private RadioButton rbAllCars;
+    @FXML
     private RadioButton rbPlate;
     @FXML
     private RadioButton rbBrand;
@@ -111,6 +113,7 @@ public class CarsListController extends GenericController {
             rbModel.setToggleGroup(toggleFilters);
             rbOwner.setToggleGroup(toggleFilters);
             rbPlate.setToggleGroup(toggleFilters);
+            rbAllCars.setToggleGroup(toggleFilters);
 
             // Button listeners
             btnSearch.setOnAction(this::handleSearch);
@@ -189,7 +192,9 @@ public class CarsListController extends GenericController {
             Parent root = (Parent) loader.load();
             CarsFormController controller = (CarsFormController) loader.getController();
             controller.setUsersManager(manager);
+            controller.setSession(session);
             session.put("newCar", false);
+            session.put("oldStage", stage);
             session.put("currentCar", (Car) tvCars.getSelectionModel().getSelectedItem());
             controller.setSession(session);
             controller.initStage(root);
@@ -212,9 +217,10 @@ public class CarsListController extends GenericController {
             Parent root = (Parent) loader.load();
             CarsFormController controller = (CarsFormController) loader.getController();
             controller.setUsersManager(manager);
-            controller.setSession(manager.getSession());
+            controller.setSession(session);
             System.out.println(session == null ? "NULL" : "NOT NULL");
             session.put("newCar", true);
+            session.put("oldStage", stage);
             controller.initStage(root);
             stage.hide();
         } catch (Exception e) {
@@ -231,7 +237,9 @@ public class CarsListController extends GenericController {
             Parent root = (Parent) loader.load();
             OwnersFormController controller = (OwnersFormController) loader.getController();
             controller.setUsersManager(manager);
+            controller.setSession(session);
             controller.initStage(root);
+            session.put("oldStage", stage);
             stage.hide();
         } catch (Exception e) {
             e.printStackTrace();
@@ -264,7 +272,7 @@ public class CarsListController extends GenericController {
     public void handleToggle(ObservableValue observable, Object oldValue, Object newValue) {
         if (newValue != null) {
             tfSearch.setText("");
-            resetTable();
+            if (rbAllCars.isSelected()) resetTable();
         }
     }
             
@@ -306,6 +314,7 @@ public class CarsListController extends GenericController {
     private void resetTable() {
         try {
             tableData = FXCollections.observableArrayList(manager.getCars());
+            tvCars.setItems(tableData);
         } catch (NoCarException ex) {
             tvCars.setItems(null);
             showWarningAlert("No cars found");

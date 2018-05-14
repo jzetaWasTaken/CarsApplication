@@ -40,7 +40,7 @@ import javax.persistence.Table;
             query="SELECT c FROM Car c WHERE c.brand LIKE concat('%', :brand, '%') ORDER BY c.brand"
     ),
     @NamedQuery(
-            name="findCarsByOwnerName",
+            name="findCarsByOwner",
             query="SELECT c FROM Car c WHERE c.owner.name LIKE concat('%', :owner, '%') OR c.owner.surname LIKE concat('%', :owner, '%') ORDER BY c.brand"
     ),
     @NamedQuery(
