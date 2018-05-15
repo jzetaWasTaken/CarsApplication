@@ -8,13 +8,8 @@ package carsapplication.ui.controller;
 import carsapplication.exception.CarDBException;
 import carsapplication.model.Owner;
 import static carsapplication.ui.controller.GenericController.LOGGER;
-import java.io.IOException;
-import java.net.URL;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,21 +25,45 @@ import javafx.stage.WindowEvent;
 /**
  * FXML Controller class
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class OwnersFormController extends GenericController {
 
+    /**
+     * Owner name text field
+     */
     @FXML
     private TextField tfName;
+    
+    /**
+     * Owner surname text field
+     */
     @FXML
     private TextField tfSurname;
+    
+    /**
+     * Owner birth date date picker
+     */
     @FXML
     private DatePicker dpBirthDate;
+    
+    /**
+     * Cancel button to return to previous view
+     */
     @FXML
     private Button btnCancel;
+    
+    /**
+     * Save button to store the owner and return to previous view
+     */
     @FXML
     private Button btnSave;
 
+    /**
+     * Window stage initializer
+     * 
+     * @param root 
+     */
     void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Car Form");
@@ -76,15 +95,25 @@ public class OwnersFormController extends GenericController {
             // Show stage
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error initializing car form");
         }
     }
     
+    /**
+     * Handles the action to be taken before the window shows
+     * 
+     * @param event 
+     */
     public void handleWindowShowing(WindowEvent event) {
         btnSave.setDisable(true);
     }
     
+    /**
+     * Handles save button. It stores the new owner, closes the current view and
+     * opens the car list view
+     * 
+     * @param event 
+     */
     public void handleSave(ActionEvent event) {
         try {
             manager.registerOwner(getOwner());
@@ -98,6 +127,11 @@ public class OwnersFormController extends GenericController {
         }
     }
     
+    /**
+     * It returns to the previous view
+     * 
+     * @param event 
+     */
     public void handleCancel(ActionEvent event) {
         //loadCarsList();
         stage.close();
@@ -105,18 +139,32 @@ public class OwnersFormController extends GenericController {
         
     }
     
+    /**
+     * Handle text value changes in the text fields
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleTextFields(ObservableValue observable,
             String oldValue,
             String newValue) {
         handleFields();
     }
     
+    /**
+     * Handles date picker value changes
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleDate(ObservableValue observable,
             Object oldValue,
             Object newValue) {
         handleFields();
     }
-    
+
     private void handleFields() {
         btnSave.setDisable(!(
             tfName.getText().trim().length() > 0 &&

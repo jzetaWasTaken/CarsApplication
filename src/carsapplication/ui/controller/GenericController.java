@@ -6,12 +6,9 @@
 package carsapplication.ui.controller;
 
 import carsapplication.logic.ManagerInterface;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -19,7 +16,8 @@ import javafx.stage.Stage;
 /**
  * This is the base class for UI controllers in this application. It contains 
  * common methods and references for objects used by UI controllers
- * @author javi
+ * 
+ * @author Jon Zaballa
  */
 public abstract class GenericController {
     /**
@@ -43,7 +41,7 @@ public abstract class GenericController {
     
     /**
      * Sets the business logic object to be used by this UI controller. 
-     * @param manager An object implementing {@link Manager} interface.
+     * @param manager An object implementing manager interface.
      */
     public void setUsersManager(ManagerInterface manager){
         this.manager = manager;
@@ -132,17 +130,4 @@ public abstract class GenericController {
         final Optional<ButtonType> result = alert.showAndWait();
         return result;
     }
-    
-    /*
-    protected void loadCarsList() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/carsapplication/ui/view/cars_list.fxml")
-        );
-        Parent root = (Parent) loader.load();
-        CarsListController controller = (CarsListController)loader.getController();
-        controller.setUsersManager(manager);
-        stage.hide();
-        controller.initStage(root);
-    }
-    */
 }

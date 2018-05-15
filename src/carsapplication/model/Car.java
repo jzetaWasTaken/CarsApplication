@@ -25,8 +25,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- *
- * @author jon
+ * Represents cars
+ * 
+ * @author Jon Zaballa
  */
 @Entity
 @Table(name="cars", schema="cars_db")
@@ -58,14 +59,40 @@ import javax.persistence.Table;
 })
 public class Car implements Serializable {
     // Fields
+    /**
+     * The car unique identifier
+     */
     private final SimpleObjectProperty<BigInteger> carId;
+    /**
+     * Car plate number
+     */
     private final SimpleStringProperty plateNumber;
+    /**
+     * Car brand
+     */
     private final SimpleStringProperty brand;
+    /**
+     * Car model
+     */
     private final SimpleStringProperty model;
+    /**
+     * Car color
+     */
     private final SimpleStringProperty color;
+    /**
+     * Car age
+     */
     private final SimpleIntegerProperty age;
+    /**
+     * Car owner
+     * 
+     * @see Owner
+     */
     private final SimpleObjectProperty<Owner> owner;
-    // Construct
+    
+    /**
+     * Constructs a car object
+     */
     public Car() {
         carId = new SimpleObjectProperty<>();
         plateNumber = new SimpleStringProperty();
@@ -75,7 +102,14 @@ public class Car implements Serializable {
         age = new SimpleIntegerProperty();
         owner = new SimpleObjectProperty<>();
     }
+    
     // Getters & setters
+    
+    /**
+     * Gets the car identifier
+     * 
+     * @return car ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="car_id")
@@ -83,71 +117,151 @@ public class Car implements Serializable {
         return carId.get();
     }
     
+    /**
+     * Sets the car identifier
+     * 
+     * @param carId 
+     */
     public void setCarId(BigInteger carId) {
         this.carId.set(carId);
     }
     
+    /**
+     * Gets the plate number
+     * 
+     * @return plate number
+     */
     @Column(name = "plate_number", unique=true)
     public String getPlateNumber() {
         return plateNumber.get();
     }
     
+    /**
+     * Sets the plate number
+     * 
+     * @param plateNumber 
+     */
     public void setPlateNumber(String plateNumber) {
         this.plateNumber.set(plateNumber);
     }
     
+    /**
+     * Gets car brand
+     * 
+     * @return brand
+     */
     public String getBrand() {
         return brand.get();
     }
     
+    /**
+     * Sets car brand
+     * 
+     * @param brand 
+     */
     public void setBrand(String brand) {
         this.brand.set(brand);
     }
     
+    /**
+     * Gets car model
+     * 
+     * @return 
+     */
     public String getModel() {
         return model.get();
     }
     
+    /**
+     * Sets car model
+     * 
+     * @param model 
+     */
     public void setModel(String model) {
         this.model.set(model);
     }
     
+    /**
+     * Gets car color
+     * 
+     * @return color
+     */
     public String getColor() {
         return color.get();
     }
     
+    /**
+     * Sets car color
+     * 
+     * @param color 
+     */
     public void setColor(String color) {
         this.color.set(color);
     }
     
+    /**
+     * Gets car age
+     * 
+     * @return age
+     */
     public Integer getAge() {
         return age.get();
     }
     
+    /**
+     * Sets car age
+     * 
+     * @param age 
+     */
     public void setAge(int age) {
         this.age.set(age);
     }
     
+    /**
+     * Gets car owner
+     * 
+     * @return owner
+     */
     @ManyToOne
     @JoinColumn(name="owner_code")
     public Owner getOwner() {
         return owner.get();
     }
     
+    /**
+     * Sets car owner
+     * 
+     * @param owner 
+     */
     public void setOwner(Owner owner) {
         this.owner.set(owner);
     }
 
+    /**
+     * Gets the date with format
+     * 
+     * @return 
+     */
     public StringProperty formattedAge() {
         return new SimpleStringProperty(
                 String.format("%s year(s)", this.getAge().toString())
         );
     }
 
+    /**
+     * Gets owners full name
+     * 
+     * @return owner full name
+     */
     public ObservableValue<String> ownerFullName() {
         return new SimpleStringProperty(this.getOwner().toString());
     }
 
+    /**
+     * Overrides toString() method
+     * 
+     * @return car string
+     */
     @Override
     public String toString() {
         return "Car{" + "carId=" + carId + ", plateNumber=" + plateNumber 
@@ -155,6 +269,11 @@ public class Car implements Serializable {
                 + '}';
     }
 
+    /**
+     * Overrides hashCode method
+     * 
+     * @return car hash code
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -163,6 +282,12 @@ public class Car implements Serializable {
         return hash;
     }
 
+    /**
+     * Overrides equals method
+     * 
+     * @param obj
+     * @return true if cars are equal; false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

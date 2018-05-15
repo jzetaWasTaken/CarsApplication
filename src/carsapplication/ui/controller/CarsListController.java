@@ -34,56 +34,147 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 /**
- * FXML Controller class
+ * FXML Controller class to manage the car list view
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class CarsListController extends GenericController {
 
+    /**
+     * Search text field
+     */
     @FXML
     private TextField tfSearch;
+    
+    /**
+     * Radio button to show all cars
+     */
     @FXML
     private RadioButton rbAllCars;
+    
+    /**
+     * Radio button to specify searching criteria is the plate number
+     */
     @FXML
     private RadioButton rbPlate;
+    
+    /**
+     * Radio button to specify searching criteria is the car brand
+     */
     @FXML
     private RadioButton rbBrand;
+    
+    /**
+     * Radio button to specify searching criteria is the car model
+     */
     @FXML
     private RadioButton rbModel;
+    
+    /**
+     * Radio button to specify searching criteria is the car color
+     */
     @FXML
     private RadioButton rbColor;
+    
+    /**
+     * Radio button to specify searching criteria is the car owner name
+     */
     @FXML
     private RadioButton rbOwner;
+    
+    /**
+     * Table view to show the stored cars
+     */
     @FXML
     private TableView tvCars;
+    
+    /**
+     * Plate number table column
+     */
     @FXML
     private TableColumn tcPlate;
+    
+    /**
+     * Brand table column
+     */
     @FXML
     private TableColumn tcBrand;
+    
+    /**
+     * Model table column
+     */
     @FXML
     private TableColumn tcModel;
+    
+    /**
+     * Color table column
+     */
     @FXML
     private TableColumn tcColor;
+    
+    /**
+     * Age table column
+     */
     @FXML
     private TableColumn tcAge;
+    
+    /**
+     * Owner table column
+     */
     @FXML
     private TableColumn tcOwner;
+    
+    /**
+     * Button to open owner form view to create a new owner
+     */
     @FXML
     private Button btnNewOwner;
+    
+    /**
+     * Button to open car form view to create a new car
+     */
     @FXML
     private Button btnNewCar;
+    
+    /**
+     * Button to delete a car
+     */
     @FXML
     private Button btnDeleteCar;
+    
+    /**
+     * Button to exit application
+     */
     @FXML
     private Button btnExit;
+    
+    /**
+     * Button to perform search action
+     */
     @FXML
     private Button btnSearch;
+    
+    /**
+     * Button to open car form view to update the car selected on the car table
+     */
     @FXML
     private Button btnUpdate;
     
+    /**
+     * Toggle group to wrap radio buttons
+     */
     private ToggleGroup toggleFilters;
+    
+    /**
+     * Observable list to handle table view car data
+     */
     private ObservableList<Car> tableData;
     
+    /**
+     * Window stage initializer
+     * 
+     * @param root 
+     */
     void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Car List");
@@ -153,6 +244,11 @@ public class CarsListController extends GenericController {
         }
     }
  
+    /**
+     * Handles the action to be taken before the window shows
+     * 
+     * @param event 
+     */
     public void handleWindowShowing(WindowEvent event) {
         try {
             // Buttons
@@ -172,18 +268,27 @@ public class CarsListController extends GenericController {
             // Focus
             Platform.runLater(()->tfSearch.requestFocus());
         } catch (NoCarException e) {
-            e.printStackTrace();
             showWarningAlert("No cars");
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error loading data");
         }
     }
     
+    /**
+     * Handles search button action
+     * 
+     * @param event 
+     */
     public void handleSearch(ActionEvent event) {
         if (!tfSearch.getText().trim().equals("")) updateTable();
     }
     
+    /**
+     * Handles car update button action. It opens a car form view and hides the
+     * current view
+     * 
+     * @param event 
+     */
     public void handleUpdate(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -200,15 +305,25 @@ public class CarsListController extends GenericController {
             controller.initStage(root);
             stage.hide();
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error Loading Window");
         }
     }
     
+    /**
+     * Exits the application
+     * 
+     * @param event 
+     */
     public void handleExit(ActionEvent event) {
         Platform.exit();
     }
     
+    /**
+     * Handles the new car button action. It opens a car form view and hides the
+     * current view
+     * 
+     * @param event 
+     */
     public void handleNewCar(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -218,17 +333,20 @@ public class CarsListController extends GenericController {
             CarsFormController controller = (CarsFormController) loader.getController();
             controller.setUsersManager(manager);
             controller.setSession(session);
-            System.out.println(session == null ? "NULL" : "NOT NULL");
             session.put("newCar", true);
             session.put("oldStage", stage);
             controller.initStage(root);
             stage.hide();
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error Loading Window");
         }
     }
     
+    /**
+     * Opens an owner form view to create a new owner
+     * 
+     * @param event 
+     */
     public void handleNewOwner(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -242,11 +360,15 @@ public class CarsListController extends GenericController {
             session.put("oldStage", stage);
             stage.hide();
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error Loading Window");
         }
     }
     
+    /**
+     * Deletes the car selected on the car table view
+     * 
+     * @param event 
+     */
     public void handleDelete(ActionEvent event) {
         try {
             Car car = (Car) tvCars.getSelectionModel().getSelectedItem();
@@ -258,6 +380,14 @@ public class CarsListController extends GenericController {
         }
     }
     
+    /**
+     * Handles the table view selection changes to disable or enable delete and
+     * update buttons
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleTableSelection(ObservableValue observable, Object oldValue, Object newValue) {
         if (tvCars.getSelectionModel().getSelectedItem() != null) {
             btnDeleteCar.setDisable(false);
@@ -268,14 +398,20 @@ public class CarsListController extends GenericController {
         }
     }
 
-    
+    /**
+     * Handles changes in the radio button toggle group value
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleToggle(ObservableValue observable, Object oldValue, Object newValue) {
         if (newValue != null) {
             tfSearch.setText("");
             if (rbAllCars.isSelected()) resetTable();
         }
     }
-            
+
     private void updateTable() {
         try {
         if (tfSearch.getText().trim().equals("")) {
@@ -306,7 +442,6 @@ public class CarsListController extends GenericController {
             tvCars.setItems(null);
             showWarningAlert("No cars found");
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Unexpected error");
         }
     }

@@ -8,11 +8,21 @@ package carsapplication.model.dao;
 import carsapplication.exception.CarDBException;
 
 /**
- *
- * @author jon
+ * Factory class with a convenient method to create the data access object
+ * instance depending on the selected database
+ * 
+ * @author Jon Zaballa
  */
 public class DAOFactory {
     
+    /**
+     * Gets the data access object implementation instance depending on the
+     * database type input
+     * 
+     * @param type
+     * @return data access object
+     * @throws CarDBException 
+     */
     public static DAOInterface newDAO(DBType type) throws CarDBException {
         switch (type) {
             case MONGO_DB:

@@ -6,8 +6,9 @@
 package carsapplication.exception;
 
 /**
- *
- * @author jon
+ * Represents a car database exception to throw from DAO and Business layers
+ * 
+ * @author Jon Zaballa
  */
 public class CarDBException extends Exception {
 
@@ -28,6 +29,12 @@ public class CarDBException extends Exception {
         super(msg);
     }
     
+    /**
+     * Constructs an instance of <code>CarDBException</code> with the specified
+     * detail message.
+     *
+     * @param cause
+     */
     public CarDBException(Throwable cause) {
         super(cause);
     }

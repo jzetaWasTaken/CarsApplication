@@ -23,8 +23,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- *
- * @author jon
+ * Represents car owners
+ * 
+ * @author Jon Zaballa
  */
 @Entity
 @Table(name="owners", schema="cars_db")
@@ -36,19 +37,44 @@ import javax.persistence.TemporalType;
 })
 public class Owner implements Serializable {
     // Fields
+    
+    /**
+     * Owners unique identifier
+     */
     private final SimpleObjectProperty<BigInteger> ownerCode;
+    
+    /**
+     * Owner's name
+     */
     private final SimpleStringProperty name;
+    
+    /**
+     * Owner's surname
+     */
     private final SimpleStringProperty surname;
+    
+    /**
+     * Owner's date of birth
+     */
     private final SimpleObjectProperty<Date> dateOfBirth;
-    // Constructors
+    
+    /**
+     * Constructs an owner instance
+     */
     public Owner() {
         ownerCode = new SimpleObjectProperty<>();
         name = new SimpleStringProperty();
         surname =  new SimpleStringProperty();
         dateOfBirth = new SimpleObjectProperty<>();
     }
+    
     // Getters & setters
     
+    /**
+     * Gets owner identifier
+     * 
+     * @return owner code
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="owner_code")
@@ -56,41 +82,86 @@ public class Owner implements Serializable {
         return ownerCode.get();
     }
     
+    /**
+     * Sets owner identifier
+     * 
+     * @param ownerCode 
+     */
     public void setOwnerCode(BigInteger ownerCode) {
         this.ownerCode.set(ownerCode);
     }
     
+    /**
+     * Gets owner name
+     * 
+     * @return owner name
+     */
     public String getName() {
         return name.get();
     }
     
+    /**
+     * Sets owner name
+     * 
+     * @param name 
+     */
     public void setName(String name) {
         this.name.set(name);
     }
     
+    /**
+     * Gets owner surname
+     * 
+     * @return owner surname
+     */
     public String getSurname() {
         return surname.get();
     }
     
+    /**
+     * Sets owner surname
+     * 
+     * @param surname 
+     */
     public void setSurname(String surname) {
         this.surname.set(surname);
     }
     
+    /**
+     * Gets owner birth date
+     * 
+     * @return owner birth date
+     */
     @Temporal(TemporalType.DATE)
     @Column(name="date_of_birth")
     public Date getDateOfBirth() {
         return dateOfBirth.get();
     }
     
+    /**
+     * Sets owner birth date
+     * 
+     * @param dateOfBirth 
+     */
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth.set(dateOfBirth);
     }
 
+    /**
+     * Overrides toString() method
+     * 
+     * @return owner string
+     */
     @Override
     public String toString() {
         return String.format("%s %s", this.getName(), this.getSurname());
     }
 
+    /**
+     * Overrides hashCode method
+     * 
+     * @return owner hash code
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -98,6 +169,12 @@ public class Owner implements Serializable {
         return hash;
     }
 
+    /**
+     * Overrides equals method
+     * 
+     * @param obj
+     * @return true if owners are equal; false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

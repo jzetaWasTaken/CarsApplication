@@ -10,13 +10,11 @@ import carsapplication.exception.NoOwnerException;
 import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import static carsapplication.ui.controller.GenericController.LOGGER;
-import java.io.IOException;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,33 +25,81 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 /**
- * FXML Controller class
+ * FXML Controller class for cars form view. Enables car creation and 
+ * modification actions
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class CarsFormController extends GenericController {
 
+    /**
+     * Car Plate number text field
+     */
     @FXML
     private TextField tfPlate;
+    
+    /**
+     * Car brand text field
+     */
     @FXML
     private TextField tfBrand;
+    
+    /**
+     * Car model text field
+     */
     @FXML
     private TextField tfModel;
+    
+    /**
+     * Car color text field
+     */
     @FXML
     private TextField tfColor;
+    
+    /**
+     * Car age text field
+     */
     @FXML
     private TextField tfAge;
+    
+    /**
+     * Car owners selection box
+     */
     @FXML
     private ComboBox cbOwner;
+    
+    /**
+     * Cancel button
+     */
     @FXML
     private Button btnCancel;
+    
+    /**
+     * Save button
+     */
     @FXML
     private Button btnSave;
 
+    /**
+     * Owners observable list to fill the owners selection box
+     */
     private ObservableList<Owner> comboData;
+    
+    /**
+     * Whether the use of the view is going to be create or update
+     */
     private boolean newCar;
+    
+    /**
+     * Car that the form represents
+     */
     Car car;
     
+    /**
+     * Window stage initializer
+     * 
+     * @param root 
+     */
     void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Car Form");
@@ -90,11 +136,15 @@ public class CarsFormController extends GenericController {
             // Show stage
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
             showErrorAlert("Error initializing car form");
         }
     }
 
+    /**
+     * Handles the action to be taken before the window shows
+     * 
+     * @param event 
+     */
     public void handleWindowShowing(WindowEvent event) {
         if (!newCar) {
             car = (Car) session.get("currentCar");
@@ -114,6 +164,13 @@ public class CarsFormController extends GenericController {
         initComboData();
     }
 
+    /**
+     * Handles text field changes
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleTextFields(
             ObservableValue observable,
             String oldValue,
@@ -121,18 +178,36 @@ public class CarsFormController extends GenericController {
         handleData();
     }
     
+    /**
+     * Handles selection box changes
+     * 
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handleCombo(ObservableValue observable,
             Object oldValue,
             Object newValue) {
         handleData();
     }
     
+    /**
+     * Handles the cancel button. It closes the form view and opens the car list
+     * view
+     * 
+     * @param event 
+     */
     public void handleCancel(ActionEvent event) {
         stage.close();
         ((Stage) session.get("oldStage")).show();
-        //loadCarsList();
     }
     
+    /**
+     * Handles save button. Calls the manger to save the current car, closes the
+     * car form and opens the car list view
+     * 
+     * @param event 
+     */
     public void handleSave(ActionEvent event) {
         try {
             mapCar();
@@ -144,12 +219,12 @@ public class CarsFormController extends GenericController {
             ((Stage) session.get("oldStage")).show(); 
             //loadCarsList();
         } catch (CarDBException e) {
-            e.printStackTrace();
             showErrorAlert("Error");
         } catch (NumberFormatException e) {
             showErrorAlert("Age must be a positive integer");
         }
     }
+    
     
     private void handleData() {
         if (tfAge.getText().trim().length() > 0 && tfBrand.getText().trim().length() > 0

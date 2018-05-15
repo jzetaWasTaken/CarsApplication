@@ -6,8 +6,10 @@
 package carsapplication.exception;
 
 /**
- *
- * @author jon
+ * Represents an exception to be thrown from DAO layer when no cars meet the
+ * finding criteria set in the query
+ * 
+ * @author Jon Zaballa
  */
 public class NoCarException extends Exception {
 

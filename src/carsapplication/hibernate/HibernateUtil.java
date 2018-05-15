@@ -16,12 +16,20 @@ import org.hibernate.service.ServiceRegistry;
  * Hibernate Utility class with a convenient method to get Session Factory
  * object.
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class HibernateUtil {
 
+    /**
+     * The session factory instance
+     */
     private static final SessionFactory sessionFactory = buildSessionFactory();
     
+    /**
+     * Builds and configures the session factory
+     * 
+     * @return session factory
+     */
     private static SessionFactory buildSessionFactory() {
         try {
             Configuration config = new Configuration();
@@ -38,12 +46,20 @@ public class HibernateUtil {
         }
     }
     
+    /**
+     * Gets the session factory instance
+     * 
+     * @return session factory
+     */
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
     
+    /**
+     * Closes caches and connection pools
+     * 
+     */
     public static void shutdown() {
-        // Close caches and connection pools
         getSessionFactory().close();
-}
+    }
 }

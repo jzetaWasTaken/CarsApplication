@@ -10,7 +10,6 @@ import carsapplication.model.Car;
 import carsapplication.model.Owner;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -24,17 +23,40 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- *
- * @author jon
+ * Data access object to manage Oracle Object Relational database
+ * 
+ * @author Jon Zaballa
  */
 public class DAOOracle implements DAOInterface {
 
+    /**
+     * Host URL
+     */
     private String host;
+    
+    /**
+     * Database name
+     */
     private String dbName;
+    
+    /**
+     * Database user
+     */
     private String dbUser;
+    
+    /**
+     * Database user password
+     */
     private String dbPassword;
+    
+    /**
+     * Database listening port
+     */
     private String dbPort;
     
+    /**
+     * SQL statement for car queries
+     */
     private static final String CAR_SQL = 
             "SELECT CAR_ID, AGE, BRAND, MODEL, PLATE_NUMBER, COLOR,"
             + "DEREF(C.CAR_OWNER).OWNER_CODE OWNER_CODE,"
@@ -42,41 +64,67 @@ public class DAOOracle implements DAOInterface {
             + "DEREF(C.CAR_OWNER).SURNAME OWNER_SURNAME,"
             + "DEREF(C.CAR_OWNER).BIRTH_DATE OWNER_BIRTH_DATE "
             + "FROM CARS C";
+    
+    /**
+     * SQL statement for owner queries
+     */
     private static final String OWNER_SQL =
             "SELECT OWNER_CODE, NAME, SURNAME, BIRTH_DATE "
             + "FROM OWNERS";
+    
+    /**
+     * SQL statement for car creation
+     */
     private static final String CAR_INSERT = 
             "INSERT INTO CARS SELECT "
             + "CAR(CAR_ID_SEQ.NEXTVAL,?,?,?,?,?,REF(O)) "
             + "FROM OWNERS O WHERE O.OWNER_CODE = ?";
+    
+    /**
+     * SQL statement for owner creation
+     */
     private static final String OWNER_INSERT =
             "INSERT INTO OWNERS VALUES(CODE_SEQ.NEXTVAL,?,?,?)";
+    
+    /**
+     * SQL statement for car update
+     */
     private static final String CAR_UPDATE = 
             "UPDATE CARS SET PLATE_NUMBER = ?, COLOR = ?, AGE = ?,"
             + "CAR_OWNER = (SELECT REF(O) FROM OWNERS O WHERE O.OWNER_CODE = ?) "
             + "WHERE CAR_ID = ?";
+    
+    /**
+     * SQL statement for car deletion
+     */
     private static final String CAR_DELETE = "DELETE CARS WHERE CAR_ID = ?";
 
+    /**
+     * Constructs a Oracle data access object. It initializes the host, the
+     * port, the database name, the user and the user password
+     * 
+     * @throws CarDBException 
+     */
     public DAOOracle() throws CarDBException {
         try (FileInputStream input = new FileInputStream("db.properties")) {
             Properties config = new Properties();
             config.load(input);
             host = config.getProperty("ip");
-            System.out.println("HOST: " + host);
             dbName = config.getProperty("dbname");
-            System.out.println("DBNAME: " + dbName);
             dbPort = config.getProperty("port");
-            System.out.println("PORT: " + dbPort);
             dbUser = config.getProperty("user");
-            System.out.println("USER: " + dbUser);
             dbPassword = config.getProperty("password");
-            System.out.println("PASSW: "+dbPassword);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new CarDBException(e.getMessage());
         }
     }
     
+    /**
+     * Gets a database connection
+     * 
+     * @return connection
+     * @throws CarDBException 
+     */
     private Connection getConnection() throws CarDBException {
         Connection connection = null;
         try {
@@ -84,12 +132,17 @@ public class DAOOracle implements DAOInterface {
             String url = String.format("jdbc:oracle:thin:@%s:%s:%s", host, dbPort, dbName);
             connection = DriverManager.getConnection(url, dbUser, dbPassword);
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
             throw new CarDBException(e.getMessage());
         }
         return connection;
     }
 
+    /**
+     * Gets all cars
+     * 
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCars() throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -103,6 +156,13 @@ public class DAOOracle implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given brand
+     * 
+     * @param brand
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByBrand(String brand) throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -117,7 +177,14 @@ public class DAOOracle implements DAOInterface {
         } 
         return cars;
     }
-
+    
+    /**
+     * Gets cars from a given owner
+     * 
+     * @param ownerName
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -135,6 +202,13 @@ public class DAOOracle implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given color
+     * 
+     * @param color
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByColor(String color) throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -150,6 +224,13 @@ public class DAOOracle implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given model
+     * 
+     * @param model
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByModel(String model) throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -165,6 +246,13 @@ public class DAOOracle implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars given a plate number
+     * 
+     * @param plateNumber
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
         List<Car> cars = new ArrayList<>();
@@ -180,6 +268,12 @@ public class DAOOracle implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets all owners
+     * 
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Owner> findOwners() throws CarDBException {
         List<Owner> owners = new ArrayList<>();
@@ -193,6 +287,12 @@ public class DAOOracle implements DAOInterface {
         return owners;
     }
 
+    /**
+     * Creates a new car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void createCar(Car car) throws CarDBException {
         try (Connection connection = getConnection()) {
@@ -209,6 +309,12 @@ public class DAOOracle implements DAOInterface {
         } 
     }
 
+    /**
+     * Creates a new owner
+     * 
+     * @param owner
+     * @throws CarDBException 
+     */
     @Override
     public void createOwner(Owner owner) throws CarDBException {
         try (Connection connection = getConnection()) {
@@ -224,17 +330,38 @@ public class DAOOracle implements DAOInterface {
         } 
     }
 
+    /**
+     * Modifies a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void updateCar(Car car) throws CarDBException {
         try (Connection connection = getConnection()) {
-            System.out.println(car.getOwner().getOwnerCode().toString());
             PreparedStatement pstmt = connection.prepareStatement(CAR_UPDATE);
             pstmt.setString(1, car.getPlateNumber());
             pstmt.setString(2, car.getColor());
             pstmt.setInt(3, car.getAge());
             pstmt.setObject(4, car.getOwner().getOwnerCode());
-            System.out.println(car.getCarId().toString());
             pstmt.setInt(5, car.getCarId().intValue());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CarDBException(e);
+        } 
+    }
+    
+    /**
+     * Deletes a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
+    @Override
+    public void deleteCar(Car car) throws CarDBException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(CAR_DELETE);
+            pstmt.setObject(1, car.getCarId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CarDBException(e);
@@ -259,18 +386,19 @@ public class DAOOracle implements DAOInterface {
             cars.add(car);
         }
     }
-
-    @Override
-    public void deleteCar(Car car) throws CarDBException {
-        try (Connection connection = getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement(CAR_DELETE);
-            pstmt.setObject(1, car.getCarId());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new CarDBException(e);
-        } 
+    
+    private void mapOwner(ResultSet set, List<Owner> owners) throws SQLException {
+        while (set.next()) {
+            Owner owner = new Owner();
+            owner.setOwnerCode(((BigDecimal)set.getObject("owner_code")).toBigInteger());
+            owner.setName(set.getString("name"));
+            owner.setSurname(set.getString("surname"));
+            owner.setDateOfBirth(set.getDate("birth_date"));
+            owners.add(owner);
+        }
     }
     
+    @Deprecated
     private Car mapCar(ResultSet set)  throws SQLException {
         Car car = null;
         if (set.next()) {
@@ -288,16 +416,5 @@ public class DAOOracle implements DAOInterface {
             car.setOwner(owner);
         }
         return car;
-    }
-
-    private void mapOwner(ResultSet set, List<Owner> owners) throws SQLException {
-        while (set.next()) {
-            Owner owner = new Owner();
-            owner.setOwnerCode(((BigDecimal)set.getObject("owner_code")).toBigInteger());
-            owner.setName(set.getString("name"));
-            owner.setSurname(set.getString("surname"));
-            owner.setDateOfBirth(set.getDate("birth_date"));
-            owners.add(owner);
-        }
     }
 }

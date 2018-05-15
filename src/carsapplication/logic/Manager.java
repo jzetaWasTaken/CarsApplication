@@ -18,25 +18,60 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @author jon
+ * Manager implementation. Contains the application business logic
+ * 
+ * @author Jon Zaballa
  */
 public class Manager implements ManagerInterface {
 
+    /**
+     * Data access object instance
+     */
     private final DAOInterface dao;
+    
+    /**
+     * Application session data
+     */
     private static final Map SESSION = new HashMap<>();
+    
+    /**
+     * No cars found message
+     */
     private static final String NO_CAR_MSG = "No cars found";
+    
+    /**
+     * No owners found message
+     */
     private static final String NO_OWNER_MSG = "No owners found";
     
+    /**
+     * Constructs a new manager object and initializes data access object 
+     * instance
+     * 
+     * @param type
+     * @throws CarDBException 
+     */
     Manager(DBType type) throws CarDBException {
         dao = DAOFactory.newDAO(type);
     }
     
+    /**
+     * Gets the current session data object
+     * 
+     * @return session
+     */
     @Override 
     public Map getSession() {
         return SESSION;
     }
     
+    /**
+     * Gets all cars
+     * 
+     * @return cars
+     * @throws CarDBException
+     * @throws NoCarException 
+     */
     @Override
     public List<Car> getCars() throws CarDBException, NoCarException {
         List<Car> cars = dao.findCars();
@@ -45,6 +80,14 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given brand
+     * 
+     * @param brand
+     * @return cars
+     * @throws NoCarException
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> getCarsByBrand(String brand) 
             throws NoCarException, CarDBException {
@@ -54,6 +97,14 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given owner
+     * 
+     * @param ownerName
+     * @return cars
+     * @throws NoCarException
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> getCarsByOwnerName(String ownerName) 
             throws NoCarException, CarDBException {
@@ -63,6 +114,14 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given color
+     * 
+     * @param color
+     * @return cars
+     * @throws NoCarException
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> getCarsByColor(String color) 
             throws NoCarException, CarDBException {
@@ -72,6 +131,14 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given model
+     * 
+     * @param model
+     * @return cars
+     * @throws NoCarException
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> getCarsByModel(String model) 
             throws NoCarException, CarDBException {
@@ -81,6 +148,14 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets cars given a plate number
+     * 
+     * @param plateNumber
+     * @return cars
+     * @throws NoCarException
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> getCarsByPlate(String plateNumber) 
             throws NoCarException, CarDBException {
@@ -90,6 +165,13 @@ public class Manager implements ManagerInterface {
         return cars;
     }
 
+    /**
+     * Gets all owners
+     * 
+     * @return cars
+     * @throws carsapplication.exception.NoOwnerException
+     * @throws CarDBException 
+     */
     @Override
     public List<Owner> getOwners() throws NoOwnerException, CarDBException {
         List<Owner> owners = dao.findOwners();
@@ -98,21 +180,45 @@ public class Manager implements ManagerInterface {
         return owners;
     }
 
+    /**
+     * Creates a new car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void registerCar(Car car) throws CarDBException {
         dao.createCar(car);
     }
 
+    /**
+     * Creates a new owner
+     * 
+     * @param owner
+     * @throws CarDBException 
+     */
     @Override
     public void registerOwner(Owner owner) throws CarDBException {
         dao.createOwner(owner);
     }
 
+    /**
+     * Modifies a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void modifyCar(Car car) throws CarDBException {
         dao.updateCar(car);
     }
 
+    /**
+     * Deletes a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void deleteCar(Car car) throws CarDBException {
         dao.deleteCar(car);

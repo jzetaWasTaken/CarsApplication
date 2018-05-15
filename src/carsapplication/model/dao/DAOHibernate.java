@@ -16,15 +16,28 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 /**
- *
- * @author jon
+ * Data access object class to manage Hibernate ORM
+ * 
+ * @author Jon Zaballa
  */
-
 public class DAOHibernate implements DAOInterface {
 
+    /**
+     * Hibernate session factory instance
+     */
     private final SessionFactory factory = HibernateUtil.getSessionFactory();
+    
+    /**
+     * Database transaction instance
+     */
     private Transaction tx;
     
+    /**
+     * Gets all cars
+     * 
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCars() throws CarDBException {
         Session session = null;
@@ -43,6 +56,13 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given brand
+     * 
+     * @param brand
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByBrand(String brand) throws CarDBException {
         Session session = null;
@@ -63,6 +83,13 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given owner
+     * 
+     * @param ownerName
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByOwnerName(String ownerName) throws CarDBException {
         Session session = null;
@@ -76,7 +103,6 @@ public class DAOHibernate implements DAOInterface {
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
-            e.printStackTrace();
             throw new CarDBException(e.getCause());
         } finally {
             if (session != null) session.close();
@@ -84,6 +110,13 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given color
+     * 
+     * @param color
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByColor(String color) throws CarDBException {
         Session session = null;
@@ -104,6 +137,13 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars from a given model
+     * 
+     * @param model
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByModel(String model) throws CarDBException {
         Session session = null;
@@ -124,6 +164,13 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets cars given a plate number
+     * 
+     * @param plateNumber
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Car> findCarsByPlate(String plateNumber) throws CarDBException {
         Session session = null;
@@ -137,7 +184,6 @@ public class DAOHibernate implements DAOInterface {
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
-            e.printStackTrace();
             throw new CarDBException(e.getCause());
         } finally {
             if (session != null) session.close();
@@ -145,6 +191,12 @@ public class DAOHibernate implements DAOInterface {
         return cars;
     }
 
+    /**
+     * Gets all owners
+     * 
+     * @return cars
+     * @throws CarDBException 
+     */
     @Override
     public List<Owner> findOwners() throws CarDBException {
         Session session = null;
@@ -163,6 +215,12 @@ public class DAOHibernate implements DAOInterface {
         return owners;
     }
 
+    /**
+     * Creates a new car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void createCar(Car car) throws CarDBException {
         Session session = null;
@@ -179,6 +237,12 @@ public class DAOHibernate implements DAOInterface {
         }
     }
 
+    /**
+     * Creates a new owner
+     * 
+     * @param owner
+     * @throws CarDBException 
+     */
     @Override
     public void createOwner(Owner owner) throws CarDBException {
         Session session = null;
@@ -195,6 +259,12 @@ public class DAOHibernate implements DAOInterface {
         }
     }
 
+    /**
+     * Modifies a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void updateCar(Car car) throws CarDBException {
         Session session = null;
@@ -211,6 +281,12 @@ public class DAOHibernate implements DAOInterface {
         }
     }
 
+    /**
+     * Deletes a car
+     * 
+     * @param car
+     * @throws CarDBException 
+     */
     @Override
     public void deleteCar(Car car) throws CarDBException {
         Session session = null;

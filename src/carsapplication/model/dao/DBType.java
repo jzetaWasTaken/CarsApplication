@@ -6,8 +6,9 @@
 package carsapplication.model.dao;
 
 /**
- *
- * @author jon
+ * Database type enumeration
+ * 
+ * @author Jon Zaballa Zarzosa
  */
 public enum DBType {
     MONGO_DB, HIBERNATE, ORACLE

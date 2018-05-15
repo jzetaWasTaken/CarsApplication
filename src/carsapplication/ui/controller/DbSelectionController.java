@@ -21,9 +21,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- * FXML Controller class
+ * FXML Controller class to handle the database selection view
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class DbSelectionController extends GenericController {
 
@@ -100,7 +100,6 @@ public class DbSelectionController extends GenericController {
             stage.close();
             controller.initStage(root);
         } catch (CarDBException e) {
-            e.printStackTrace();
             showErrorAlert("Database Error");
         } catch (IOException e) {
             showErrorAlert("Error Loading Window");

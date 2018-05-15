@@ -13,11 +13,18 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 /**
+ * Application entry point
  *
- * @author jon
+ * @author Jon Zaballa
  */
 public class CarsApplication extends Application {
     
+    /**
+     * Actions to perform when the application starts
+     * 
+     * @param primaryStage
+     * @throws Exception 
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         //Create Bussines Logic Controller to be passed to UI controllers
@@ -37,6 +44,8 @@ public class CarsApplication extends Application {
     }
 
     /**
+     * Main method
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) {
